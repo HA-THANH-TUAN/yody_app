@@ -1,33 +1,83 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+body{
+    font-family: 'Inter', sans-serif;
+    transition: background 0.2s ease-out;
+}
+input:focus{
+    outline:0;
+}
+input{
+    border:none;
+}
+
+.item-spacing + .item-spacing {
+    margin-left:30px;
+}
+.box-shadow-header{
+    box-shadow: 0 6px 12px 0 rgba(0,0,0,0.05);
+}
+
+.hover-category-item:hover {
+  opacity:0.9;
+  cursor:pointer;
+  color:rgb(252, 175, 23);
+}
+
+/* header */
+header .item-nav{
+
+}
+header .name-item:after{
+    content:"";
+    display:block;
+    width:0;
+    position:absolute;
+    bottom:-4px;
+    border-top-left-radius:4px;
+    border-top-right-radius:4px;
+    height:4px;
+    transition: width 0.15s ease-out;
+    background-color:rgb(252, 175, 23);
+}
+
+header .name-item:hover:after{
+  width:calc(100% + 8px);
+}
+header .name-item:hover{
+  cursor:pointer;
+}
+header .name-item{
+    position:relative;
+    line-height:35px;
+    display:flex;
+    justify-content: center;
+}
+header .item-nav:hover {}
+
+.bg-header {
+  background-image:url("/images/background-header.webp");
+}
+header .item-nav .list-item-nav {
+    right:0;
+}
+header .item-nav:hover .list-item-nav {
+    display:block;
+    left:0;
+    top:100%;
 }
