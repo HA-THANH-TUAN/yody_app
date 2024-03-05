@@ -1,13 +1,121 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* @tailwind base; */
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+p {
+    margin-block-start: 0em;
+    margin-block-end: 0em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}
+body{
+    font-family: 'Inter', sans-serif;
+    transition: background 0.2s ease-out;
+}
+input:focus{
+    outline:0;
+}
+input{
+    border:none;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.item-spacing + .item-spacing {
+    margin-left:30px;
+}
+.box-shadow-header{
+    box-shadow: 0 6px 12px 0 rgba(0,0,0,0.05);
+}
+
+.hover-category-item:hover {
+   opacity:0.9;
+   cursor:pointer;
+   color:rgb(252, 175, 23);
+}
+
+// header
+header .item-nav{
+
+}
+header .name-item:after{
+    content:"";
+    display:block;
+    width:0;
+    position:absolute;
+    bottom:-4px;
+    border-top-left-radius:4px;
+    border-top-right-radius:4px;
+    height:4px;
+    transition: width 0.15s ease-out;
+    background-color:rgb(252, 175, 23);
+}
+
+
+header .name-item:hover:after{
+    width:calc(100% + 8px);
+}
+header .name-item:hover{
+    cursor:pointer;
+}
+header .name-item{
+    position:relative;
+    line-height:35px;
+    display:flex;
+    justify-content: center;
+
+
+}
+header .item-nav:hover {}
+header .item-nav .list-item-nav {
+    right:0;
+}
+header .item-nav:hover .list-item-nav {
+    display:block;
+    left:0;
+    top:100%;
+}
+
+.hidden-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .hidden-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+.ant-tree-treenode-selected::before {
+    border-radius: 4px;
+}
+.ant-tree-treenode {
+    padding: 0px 0px 4px 3px !important;
+    height:42px;
+    align-items: center !important;
+}
+.ant-tree-node-content-wrapper .ant-tree-title {
+    flex:1;
+    
+}
+.ant-tree-switcher{
+    align-self: center !important;
+}
+:where(.css-dev-only-do-not-override-1k979oh).ant-tree.ant-tree-directory .ant-tree-treenode-selected:hover::before, :where(.css-dev-only-do-not-override-1k979oh).ant-tree.ant-tree-directory .ant-tree-treenode-selected::before {
+    background: rgba(0, 0, 0, 0.04);
+}
+:where(.css-dev-only-do-not-override-1k979oh).ant-tree.ant-tree-directory .ant-tree-treenode-selected .ant-tree-switcher {
+    color: #0035f3;
+}
+:where(.css-dev-only-do-not-override-1k979oh).ant-tree.ant-tree-directory .ant-tree-treenode-selected::before {
+    background: #00000012;
+}
+:where(.css-dev-only-do-not-override-1k979oh).ant-tree.ant-tree-directory .ant-tree-treenode .ant-tree-node-content-wrapper.ant-tree-node-selected {
+    color: #0035f3;
+    font-weight: 700;
+    background: transparent;
+}
+.ant-tree-node-content-wrapper {
+    display:flex !important;
+    align-items: center;
+    padding-left:0 !important;
 }
