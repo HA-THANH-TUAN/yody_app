@@ -1,26 +1,38 @@
-import { Header } from 'antd/es/layout/layout'
-import React, { FC, useEffect } from 'react'
-import { UserOutlined } from '@ant-design/icons';
+import { Header } from 'antd/es/layout/layout';
+import React, { FC } from 'react';
 
-import { Avatar, Badge, Button, Flex, Input, Layout, Space, theme } from 'antd';
+import { Button, theme } from 'antd';
 import { useAppDispatch, useAppSelector } from '../app/hook';
-import { collapsedSiderBar, resetApp, selectCollapsedSiderBar } from '../Features/setting';
-import {MenuFoldOutlined,MenuUnfoldOutlined,ShoppingCartOutlined,SearchOutlined } from '@ant-design/icons';
-import { FaShoppingCart } from "react-icons/fa";
-import { BsBellFill } from "react-icons/bs";
-interface IHeaderPage {
-    colorBgContainer:string
-}
-const HeaderPage : FC<IHeaderPage>= () => {
+import {
+  collapsedSiderBar,
+  selectCollapsedSiderBar
+} from '../Features/setting';
+import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+
+interface IHeaderPage {}
+const HeaderPage: FC<IHeaderPage> = () => {
+  const {
+    token: { colorBgContainer, borderRadiusLG }
+  } = theme.useToken();
   const dispatch = useAppDispatch();
   const isCollapsedSiderBar = useAppSelector(selectCollapsedSiderBar);
-  const collapseSiderBar = ()=>{
-    dispatch(collapsedSiderBar())
-  }
-  
+  const collapseSiderBar = () => {
+    dispatch(collapsedSiderBar());
+  };
+
   return (
-    <Header className={`p-0 flex items-center px-5 bg-white`}>
-      <div><Button className='bg-blue-300' type="primary" shape='default'  icon = {isCollapsedSiderBar ? <MenuUnfoldOutlined/> : <MenuFoldOutlined />} onClick={collapseSiderBar} /></div>
+    <Header className={`p-0 flex items-center px-5 bg-[${colorBgContainer}]`}>
+      <div>
+        <Button
+          className='bg-blue-300'
+          type='primary'
+          shape='default'
+          icon={
+            isCollapsedSiderBar ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />
+          }
+          onClick={collapseSiderBar}
+        />
+      </div>
       {/* <section className='flex-1'>
         <div className='w-full flex justify-between'>
           <div className='w-80'>
@@ -41,7 +53,7 @@ const HeaderPage : FC<IHeaderPage>= () => {
         </div>
       </section> */}
     </Header>
-  )
-}
+  );
+};
 
-export default HeaderPage
+export default HeaderPage;

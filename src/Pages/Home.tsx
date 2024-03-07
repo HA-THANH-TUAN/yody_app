@@ -1,11 +1,12 @@
-import { Content } from 'antd/es/layout/layout'
-import React, { FC } from 'react'
-interface IHome {
-  colorBgContainer: string,
-borderRadiusLG: number,
-}
+import { theme } from 'antd';
+import { Content } from 'antd/es/layout/layout';
+import React, { FC } from 'react';
+interface IHome {}
 
-const Home :FC<IHome> = ({colorBgContainer, borderRadiusLG}) => {
+const Home: FC<IHome> = () => {
+  const {
+    token: { colorBgContainer, borderRadiusLG }
+  } = theme.useToken();
   return (
     <Content style={{ margin: '24px 16px 0' }}>
       <div
@@ -13,13 +14,13 @@ const Home :FC<IHome> = ({colorBgContainer, borderRadiusLG}) => {
           padding: 24,
           minHeight: 360,
           background: colorBgContainer,
-          borderRadius: borderRadiusLG,
+          borderRadius: borderRadiusLG
         }}
       >
         content
       </div>
     </Content>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
