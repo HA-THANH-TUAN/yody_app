@@ -8,6 +8,6 @@
   "arrowParens": "always",
   "trailingComma": "none",
   "endOfLine": "auto",
-  "printWidth": 80,
+  "printWidth": 120,
   "htmlWhitespaceSensitivity": "ignore"
 }

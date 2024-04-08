@@ -27,10 +27,10 @@ import {
 import ForwardDirectoryTree from 'antd/es/tree/DirectoryTree';
 import { AntTreeNodeProps } from 'antd/es/tree';
 import { TiArrowSortedDown } from 'react-icons/ti';
-import { ICategory } from '../../Models/response';
-import TiltleCategory from '../../Components/TitleCategory';
-import { PayloadUpdateCategory } from '../../apis/category';
+import { ICategoryResponse } from '../../Models/response';
 import { genSlug } from '../../utils/common';
+import TiltleCategory from '../../Components/TitleCategory';
+import { PayloadUpdateCategory } from '../../Models/request';
 
 interface ICategoryDetail {
   name?: string;
@@ -45,7 +45,7 @@ interface IFormEditCategory {
   status: IValueOfKeyFormForm<string>;
 }
 
-const initialMountForm = (data: ICategory | undefined): IFormEditCategory => {
+const initialMountForm = (data: ICategoryResponse | undefined): IFormEditCategory => {
   return {
     name: { value: data?.name ?? '', isChange: false },
     status: { value: Boolean(data?.isDeleted) ? '1' : '0', isChange: false }
@@ -61,9 +61,7 @@ const CategoryDetail: FC<ICategoryDetail> = (props) => {
   const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
   const [openToolKey, setOpenToolKey] = useState<string>('');
   const [messageApi, contextHolder] = message.useMessage();
-  const [dataForm, setDataForm] = useState<IFormEditCategory>(() =>
-    initialMountForm(categoryDetail?.categories[0])
-  );
+  const [dataForm, setDataForm] = useState<IFormEditCategory>(() => initialMountForm(categoryDetail?.categories[0]));
   const openMessage = () => {
     messageApi.open({
       key: Date().valueOf(),
@@ -77,7 +75,6 @@ const CategoryDetail: FC<ICategoryDetail> = (props) => {
       dispatch(getCategoryForId(idCategory))
         .unwrap()
         .then((data) => {
-          console.log('forId in component::: first');
           setDataForm(initialMountForm(data.metadata?.categories[0]));
         });
     }
@@ -102,15 +99,12 @@ const CategoryDetail: FC<ICategoryDetail> = (props) => {
         id: idCategory,
         ...result
       };
-      console.log('payloadUpdate:::', payloadUpdate);
       dispatch(updateCategory(payloadUpdate))
         .unwrap()
         .then((data) => {
-          console.log('dataUdate', data);
           dispatch(getCategoryForId(idCategory))
             .unwrap()
             .then((data) => {
-              console.log('forId in component');
               setDataForm(initialMountForm(data.metadata?.categories[0]));
             });
         });
@@ -137,9 +131,7 @@ const CategoryDetail: FC<ICategoryDetail> = (props) => {
         ...state,
         status: {
           value: value,
-          isChange:
-            value !==
-            (categoryDetail?.categories[0].isDeleted === true ? '1' : '0')
+          isChange: value !== (categoryDetail?.categories[0].isDeleted === true ? '1' : '0')
         }
       };
     });
@@ -160,7 +152,7 @@ const CategoryDetail: FC<ICategoryDetail> = (props) => {
     }
   };
 
-  const handleClickTool = (key: string, value: ICategory) => {
+  const handleClickTool = (key: string, value: ICategoryResponse) => {
     if (openToolKey.length > 0) {
       if (key === openToolKey) {
         setOpenToolKey('');
@@ -170,13 +162,11 @@ const CategoryDetail: FC<ICategoryDetail> = (props) => {
     }
   };
 
-  const isChangedForm = (
-    Object.keys(dataForm) as Array<keyof typeof dataForm>
-  ).some((field) => {
+  const isChangedForm = (Object.keys(dataForm) as Array<keyof typeof dataForm>).some((field) => {
     return dataForm[field].isChange && dataForm[field].value.length > 0;
   });
 
-  function recursiveConvert(data: ICategory[]): TreeDataNode[] {
+  function recursiveConvert(data: ICategoryResponse[]): TreeDataNode[] {
     if (data.length > 0) {
       return data.map((value) => {
         const vlc = {
@@ -196,10 +186,10 @@ const CategoryDetail: FC<ICategoryDetail> = (props) => {
           key: `${value._id}`,
 
           children:
-            value.categories?.length > 0
+            value.categories !== undefined && value.categories.length > 0
               ? recursiveConvert(value.categories)
               : undefined,
-          isLeaf: value.categories?.length > 0 ? false : true
+          isLeaf: value.categories !== undefined && value.categories.length > 0 ? false : true
         };
         return vlc;
       });
@@ -218,18 +208,9 @@ const CategoryDetail: FC<ICategoryDetail> = (props) => {
   return (
     <div>
       {contextHolder}
-      {
-        <Spin
-          spinning={statusUpdateCategory === 'pending'}
-          fullscreen
-          tip='Updating'
-          size='large'
-        />
-      }
+      {<Spin spinning={statusUpdateCategory === 'pending'} fullscreen tip='Updating' size='large' />}
       <section className='overflow-hidden py-3 px-2 rounded-md bg-[white]'>
-        <h2 className='text-center mb-4 text-2xl font-semibold'>
-          {`${categoryDetail?.categories[0].name}`}
-        </h2>
+        <h2 className='text-center mb-4 text-2xl font-semibold'>{`${categoryDetail?.categories[0].name}`}</h2>
         <Form layout='vertical'>
           <Row gutter={10}>
             <Col xs={24} lg={12}>
@@ -265,11 +246,7 @@ const CategoryDetail: FC<ICategoryDetail> = (props) => {
               </Form.Item>
             </Col>
             <Col xs={24} lg={12}>
-              <Form.Item
-                label='Name'
-                required
-                tooltip='This is a required field'
-              >
+              <Form.Item label='Name' required tooltip='This is a required field'>
                 <Input
                   name='name'
                   onChange={handleChangeName}
@@ -280,44 +257,26 @@ const CategoryDetail: FC<ICategoryDetail> = (props) => {
             </Col>
             <Col xs={24} lg={12}>
               <Form.Item label='Slug'>
-                <Input
-                  value={genSlug(dataForm.name.value)}
-                  placeholder='input placeholder'
-                  disabled
-                />
+                <Input value={genSlug(dataForm.name.value)} placeholder='input placeholder' disabled />
               </Form.Item>
             </Col>
             <Col xs={24} lg={12}>
-              <Form.Item
-                label='Status'
-                tooltip={{ title: 'Tooltip with customize icon' }}
-              >
-                <Radio.Group
-                  name='status'
-                  onChange={handleChangeRadio}
-                  value={dataForm.status.value}
-                >
+              <Form.Item label='Status' tooltip={{ title: 'Tooltip with customize icon' }}>
+                <Radio.Group name='status' onChange={handleChangeRadio} value={dataForm.status.value}>
                   <Radio value={'0'}>Active</Radio>
                   <Radio value={'1'}>Deleted</Radio>
                 </Radio.Group>
               </Form.Item>
             </Col>
             <Col xs={24} lg={12} xl={8}>
-              <Form.Item
-                label='Field B'
-                tooltip={{ title: 'Tooltip with customize icon' }}
-              >
+              <Form.Item label='Field B' tooltip={{ title: 'Tooltip with customize icon' }}>
                 <Input placeholder='input placeholder' />
               </Form.Item>
             </Col>
             <Col xs={24}>
               <Form.Item>
                 <Button
-                  disabled={
-                    !isChangedForm ||
-                    statusUpdateCategory === 'pending' ||
-                    statusGetCategories === 'pending'
-                  }
+                  disabled={!isChangedForm || statusUpdateCategory === 'pending' || statusGetCategories === 'pending'}
                   type='primary'
                   style={{ marginRight: '30px' }}
                   onClick={handleUpdateCategory}
@@ -325,11 +284,7 @@ const CategoryDetail: FC<ICategoryDetail> = (props) => {
                   Save
                 </Button>
                 <Button
-                  disabled={
-                    !isChangedForm ||
-                    statusUpdateCategory === 'pending' ||
-                    statusGetCategories === 'pending'
-                  }
+                  disabled={!isChangedForm || statusUpdateCategory === 'pending' || statusGetCategories === 'pending'}
                   danger
                   onClick={handleResetForm}
                   icon={<GrPowerReset />}

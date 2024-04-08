@@ -3,25 +3,22 @@ import { Col, Row, Tree } from 'antd';
 import type { GetProps, TreeDataNode } from 'antd';
 import CategoryDetail from '../../Containers/CategoryDetail';
 import { useAppDispatch, useAppSelector } from '../../app/hook';
-import {
-  getCategories,
-  selectCategories
-} from '../../Features/categoryPageSlice';
-import { ICategory } from '../../Models/response';
+import { getCategories, selectCategories } from '../../Features/categoryPageSlice';
 import { TiArrowSortedDown } from 'react-icons/ti';
 import { AntTreeNodeProps } from 'antd/es/tree';
 import TiltleCategory from '../../Components/TitleCategory';
+import { ICategoryResponse } from '../../Models/response';
 type DirectoryTreeProps = GetProps<typeof Tree.DirectoryTree>;
 const { DirectoryTree } = Tree;
 
 const ProductCategory: React.FC = () => {
-  const [detailCategory, setDetailCategory] = useState<ICategory>();
+  const [detailCategory, setDetailCategory] = useState<ICategoryResponse>();
   const [openDetailDraw, setOpenDetailDraw] = useState<boolean>(false);
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
   const [openToolKey, setOpenToolKey] = useState('');
   const dispatch = useAppDispatch();
   useEffect(() => {
-    dispatch(getCategories(123));
+    dispatch(getCategories());
   }, []);
 
   const categories = useAppSelector(selectCategories);
@@ -32,7 +29,7 @@ const ProductCategory: React.FC = () => {
       setExpandedKeys((state) => [...state, _id]);
     }
   };
-  const handleClickTool = (key: string, value: ICategory) => {
+  const handleClickTool = (key: string, value: ICategoryResponse) => {
     if (openToolKey.length > 0) {
       if (key === openToolKey) {
         setOpenToolKey('');
@@ -42,7 +39,7 @@ const ProductCategory: React.FC = () => {
       setDetailCategory(value);
     }
   };
-  function recursiveConvert(data: ICategory[]): TreeDataNode[] {
+  function recursiveConvert(data: ICategoryResponse[]): TreeDataNode[] {
     if (data.length > 0) {
       return data.map((value) => {
         const vlc = {
@@ -66,10 +63,10 @@ const ProductCategory: React.FC = () => {
           key: `${value._id}`,
 
           children:
-            value.categories?.length > 0
-              ? recursiveConvert(value.categories)
+            value.categories !== undefined && value.categories.length > 0
+              ? recursiveConvert(value?.categories)
               : undefined,
-          isLeaf: value.categories?.length > 0 ? false : true
+          isLeaf: value.categories !== undefined && value.categories.length > 0 ? false : true
         };
         return vlc;
       });
@@ -82,9 +79,7 @@ const ProductCategory: React.FC = () => {
     <Row gutter={[10, 10]}>
       <Col xs={24} lg={12} xl={10}>
         <section className='overflow-hidden py-3 px-2 rounded-md bg-[white]'>
-          <h2 className='text-center mb-4 text-2xl font-semibold'>
-            Structure of category
-          </h2>
+          <h2 className='text-center mb-4 text-2xl font-semibold'>Structure of category</h2>
           <DirectoryTree
             multiple={true}
             defaultExpandAll={true}
@@ -110,11 +105,7 @@ const ProductCategory: React.FC = () => {
         </section>
       </Col>
       {detailCategory && openDetailDraw && (
-        <CategoryDetail
-          detailData={detailCategory}
-          isOpenDraw={openDetailDraw}
-          setOpenDraw={setOpenDetailDraw}
-        />
+        <CategoryDetail detailData={detailCategory} isOpenDraw={openDetailDraw} setOpenDraw={setOpenDetailDraw} />
       )}
     </Row>
   );

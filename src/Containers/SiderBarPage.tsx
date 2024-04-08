@@ -10,10 +10,7 @@ import type { MenuProps } from 'antd';
 import { Button, Menu, theme } from 'antd';
 import Layout from 'antd/es/layout/layout';
 import { useAppSelector } from '../app/hook';
-import {
-  selectCollapsedSiderBar,
-  selectScreenWidth
-} from '../Features/setting';
+import { selectCollapsedSiderBar, selectScreenWidth } from '../Features/setting';
 import logo from '../Assets/images/logo_y.png';
 import { MdDashboard } from 'react-icons/md';
 import { GrProductHunt } from 'react-icons/gr';
@@ -62,22 +59,13 @@ const SiderBarPage: React.FC = () => {
   const {
     token: { colorBgContainer }
   } = theme.useToken();
-  console.log('colorBgContainer:::', theme.useToken());
   return (
-    <div
-      className={`hidden-scrollbar bg-[${colorBgContainer}] overflow-y-auto border-r`}
-    >
+    <div className={`hidden-scrollbar bg-[${colorBgContainer}] overflow-y-auto border-r`}>
       <div className='flex h-16 items-center justify-center border-b'>
         <span className='inline-block w-10 h-10 rounded-[50%] bg-blue-500 '>
-          <img
-            className='w-full h-full block p-[10px] object-contain'
-            src={logo}
-            alt=''
-          />
+          <img className='w-full h-full block p-[10px] object-contain' src={logo} alt='' />
         </span>
-        {!collapsed && screenWidth > 768 && (
-          <span className='font-semibold text-xl ml-2'>ADMIN</span>
-        )}
+        {!collapsed && screenWidth > 768 && <span className='font-semibold text-xl ml-2'>ADMIN</span>}
       </div>
       <Menu
         style={{

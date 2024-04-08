@@ -1,21 +1,18 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { ICategory } from '../Models/response';
-import CategoryApi, {
-  IMetaDataResponseCategoryForId,
-  PayloadUpdateCategory
-} from '../apis/category';
-import { RootState } from '../app/store';
 
-export const getCategories = createAsyncThunk(
-  'category/getCategories',
-  async (userId: number, { rejectWithValue }) => {
-    const data = await CategoryApi.getCategories();
-    if (data.status > 300) {
-      throw rejectWithValue(data);
-    }
-    return data;
+import { RootState } from '../app/store';
+import CategoryApi from '../apis/category';
+import { PayloadUpdateCategory } from '../Models/request';
+import { ICategoryResponse, IMetaDataResponseCategoryForId } from '../Models/response';
+
+export const getCategories = createAsyncThunk('category/getCategories', async (undefined, { rejectWithValue }) => {
+  const data = await CategoryApi.getCategories();
+  console.log(data);
+  if (data.status > 300) {
+    throw rejectWithValue(data);
   }
-);
+  return data;
+});
 export const getCategoryForId = createAsyncThunk(
   'category/getCategoryForId',
   async (id: string, { rejectWithValue }) => {
@@ -38,7 +35,7 @@ export const updateCategory = createAsyncThunk(
 );
 
 interface ICategoryPage {
-  categories: ICategory[];
+  categories: ICategoryResponse[];
   categoryDetail: IMetaDataResponseCategoryForId | null;
   statusUpdateCategory: 'pending' | 'rejected' | 'fulfilled' | 'idle';
   statusGetCategories: 'pending' | 'rejected' | 'fulfilled' | 'idle';
@@ -68,7 +65,7 @@ export const categoryPageSlice = createSlice({
       console.log('pending in thunk:::');
     });
     builder.addCase(getCategories.rejected, (state, action) => {
-      console.log('rejected in thunk:::', state.categories);
+      console.log('rejected in thunk:::', action);
     });
 
     builder.addCase(getCategoryForId.fulfilled, (state, action) => {
@@ -95,14 +92,10 @@ export const categoryPageSlice = createSlice({
   }
 });
 
-export const selectCategories = (state: RootState) =>
-  state.categoryPage.categories;
+export const selectCategories = (state: RootState) => state.categoryPage.categories;
 
-export const selectCategoryDetail = (state: RootState) =>
-  state.categoryPage.categoryDetail;
-export const selectStatusUpdateCategory = (state: RootState) =>
-  state.categoryPage.statusUpdateCategory;
-export const selectStatusGetCategories = (state: RootState) =>
-  state.categoryPage.statusGetCategories;
+export const selectCategoryDetail = (state: RootState) => state.categoryPage.categoryDetail;
+export const selectStatusUpdateCategory = (state: RootState) => state.categoryPage.statusUpdateCategory;
+export const selectStatusGetCategories = (state: RootState) => state.categoryPage.statusGetCategories;
 
 export default categoryPageSlice.reducer;

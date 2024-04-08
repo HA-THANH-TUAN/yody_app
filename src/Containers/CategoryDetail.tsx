@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Button, Col, Form, Drawer, Input, Radio, Space, Row } from 'antd';
 import type { DrawerProps, RadioChangeEvent } from 'antd';
-import { ICategory } from '../Models/response';
 import { genSlug } from '../utils/common';
 import { GrPowerReset } from 'react-icons/gr';
+import { ICategory } from '../Models/category';
 interface ICategoryDetail {
   detailData: ICategory;
   setOpenDraw: React.Dispatch<React.SetStateAction<boolean>>;
