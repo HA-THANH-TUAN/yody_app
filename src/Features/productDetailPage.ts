@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import ProductApi, { PayloadAddSizeAmountOption } from '../apis/products';
+import ProductApi, { PayloadAddSizeAmountOption, PayloadUpdateOptionProduct } from '../apis/products';
 import { IProuductsMetaData } from '../Models/response';
 import { RootState } from '../app/store';
 import { PayloadDeleteUploadOptionProduct } from '../Models/request';
@@ -42,6 +42,8 @@ export const changeOptionProduct = createAsyncThunk(
     const optionId = payload['optionId'];
     const dataChangeUploads = payload['uploads'];
     const dataChangeSizeAmounts = payload['sizeAmounts'];
+    const dataChangeColor = payload['name'];
+    const dataChangeColorCode = payload['colorCode'];
     const listPromise = [];
     for (const key of Object.keys(dataChangeUploads) as Array<keyof IDataChange['uploads']>) {
       if (key === 'delete' && dataChangeUploads['delete'].length > 0) {
@@ -98,6 +100,21 @@ export const changeOptionProduct = createAsyncThunk(
           })
         );
       }
+    }
+    if (dataChangeColorCode || dataChangeColor) {
+      const updateData: PayloadUpdateOptionProduct['updateData'] = {};
+      if (dataChangeColor) {
+        updateData['color'] = dataChangeColor;
+      }
+      if (dataChangeColorCode) {
+        updateData['colorCode'] = dataChangeColorCode;
+      }
+      listPromise.push(
+        ProductApi.updateOptionProduct({
+          optionId: optionId,
+          updateData: updateData
+        })
+      );
     }
     const data = await Promise.all(listPromise);
     console.log('data:::', data);

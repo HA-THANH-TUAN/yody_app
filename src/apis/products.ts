@@ -27,6 +27,9 @@ class ProductApi {
   static uploadProduct(payload: FormData) {
     return axiosInstance.post<any, IResponse<IMetaDataResponseCreateProduct>>(`/admin/upload-product`, payload);
   }
+  static updateOptionProduct(payload: PayloadUpdateOptionProduct) {
+    return axiosInstance.patch<any, ICommonResponse>(`/admin/product/option/`, payload);
+  }
   static deleteOptionProduct(optionId: string) {
     return axiosInstance.delete<any, ICommonResponse>(`/admin/product/option/${optionId}`);
   }
@@ -54,6 +57,14 @@ export interface PayloadAddSizeAmountOption {
     size: string;
     amount: number;
   }[];
+}
+
+export interface PayloadUpdateOptionProduct {
+  optionId: string;
+  updateData: {
+    color?: string;
+    colorCode?: string;
+  };
 }
 export interface PayloadDeleteSizeAmountOption {
   optionId: string;

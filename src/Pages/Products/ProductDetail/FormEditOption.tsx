@@ -8,6 +8,7 @@ import {
   Image,
   Input,
   InputNumber,
+  message,
   Modal,
   Popover,
   Row,
@@ -168,6 +169,7 @@ const FormEditOption: FC<IFormEditOption> = ({ productColor }) => {
   const statusDeleteOptionProduct = useAppSelector(selectStatusDeleteOptionProduct);
   const statusChangeOptionProduct = useAppSelector(selectStatusChangeOptionProduct);
   const statusGetProduct = useAppSelector(selectStatusGetProduct);
+  const [messageApi, contextHolder] = message.useMessage();
 
   console.log('render FormEditOption:::');
 
@@ -260,6 +262,7 @@ const FormEditOption: FC<IFormEditOption> = ({ productColor }) => {
     dispatch(deleteOptionProduct(optionId))
       .unwrap()
       .then(() => {
+        messageApi.success('Deleted Option');
         dispatch(getProduct(params.id ?? ''));
       });
   };
@@ -325,6 +328,7 @@ const FormEditOption: FC<IFormEditOption> = ({ productColor }) => {
       .then((data) => {
         setDataChange(initialDataChange);
         setUploadMediaOptions([]);
+        messageApi.success('Updated Option');
         dispatch(getProduct(params.id ?? ''));
       });
   };
@@ -332,7 +336,7 @@ const FormEditOption: FC<IFormEditOption> = ({ productColor }) => {
   const checkIsChangeData = () => {
     const isSizeAmountChange = Object.values(dataChange.sizeAmounts).some((value) => value.length > 0);
     const isUploadChange = Object.values(dataChange.uploads).some((value) => value.length > 0);
-    return isSizeAmountChange || isUploadChange;
+    return isSizeAmountChange || isUploadChange || dataChange['colorCode'] || dataChange['name'];
   };
 
   console.log('dataChange:::', dataChange);
@@ -343,6 +347,7 @@ const FormEditOption: FC<IFormEditOption> = ({ productColor }) => {
 
   return (
     <div style={{ borderColor: `${productColor.colorCode}` }} className='mb-8 p-2 border-dashed border rounded'>
+      {contextHolder}
       {
         <Spin
           style={{ zIndex: 200000 }}

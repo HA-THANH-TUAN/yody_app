@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import FormUploadProductImage from '../ProductCreate/FormUploadProductImage';
-import { Button, Form } from 'antd';
+import { Button, Form, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useForm } from 'antd/es/form/Form';
 
@@ -40,7 +40,7 @@ const ProductOptionDetail = () => {
   const params = useParams();
   const statusGetProduct = useAppSelector(selectStatusGetProduct);
   const product = useAppSelector(selectProduct);
-
+  const [messageApi, contextHolder] = message.useMessage();
   useEffect(() => {
     dispatch(getProduct(params.id ?? ''))
       .unwrap()
@@ -160,6 +160,7 @@ const ProductOptionDetail = () => {
   console.log('productOptionRender');
   return (
     <div className='px-3 pb-5'>
+      {contextHolder}
       <div>
         <h3 className='font-medium flex items-center text-center justify-center text-2xl'>
           Option
