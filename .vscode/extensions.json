@@ -1,5 +1,8 @@
 {
-    "recommendations": [
-        "esbenp.prettier-vscode"
-    ]
+ "recommendations": [
+  "esbenp.prettier-vscode",
+  "ecmel.vscode-html-css",
+  "joy-yu.css-snippets",
+  "wscats.html-snippets"
+ ]
 }

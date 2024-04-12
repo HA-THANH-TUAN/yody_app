@@ -1,0 +1,34 @@
+.form-edit-address-component .form {
+}
+.form-edit-address-component .form .input-item {
+}
+.form-edit-address-component .form .input-item label {
+}
+.form-edit-address-component .form .input-item input {
+}
+.form-edit-address-component .form .input-item input:focus {
+ padding-top: 10px;
+}
+.form-edit-address-component .form .input-item label {
+ transition: all 0.15s ease-in-out;
+}
+.form-edit-address-component .form .input-item input {
+ transition: all 0.1s ease-in-out;
+}
+.form-edit-address-component .form .input-item input:focus ~ label {
+ top: 0;
+ font-size: 12px;
+}
+.form-edit-address-component .form .input-item input:not(:placeholder-shown) {
+ padding-top: 10px;
+}
+.form-edit-address-component
+ .form
+ .input-item
+ input:not(:placeholder-shown)
+ ~ label {
+ top: 0;
+ font-size: 12px;
+}
+.form-edit-address-component .form {
+}

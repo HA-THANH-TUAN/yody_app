@@ -17,9 +17,13 @@ export default function RootLayout({
 }>) {
  return (
   <html lang='en'>
-   <body className={inter.className}>
+   <body
+    style={{ position: 'relative' }}
+    className={inter.className}
+    // suppressHydrationWarning={true}
+   >
     <Header />
-    {children}
+    <section className=' mt-[62px] lg:mt-[103px]'>{children}</section>
    </body>
   </html>
  )

@@ -1,271 +1,408 @@
 'use client'
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { CgMenu } from 'react-icons/cg'
 import { FiSearch } from 'react-icons/fi'
-import { IoCallSharp } from 'react-icons/io5'
+import { IoCallSharp, IoSearchOutline } from 'react-icons/io5'
 import { BiCategory, BiUser } from 'react-icons/bi'
-import MegaMenu from './MegaMenu'
+import MegaMenu from './components/MegaMenu'
 import Image from 'next/image'
+import Link from 'next/link'
+import HeaderItemUnder from './HeaderItemUnder'
+import MenuMobile from './components/MenuMobil/MenuMobile'
+import HeaderItemAbove from './HeaderItemAbove'
+import SearchMobile from './components/SearchMobile'
 
-const data = [
+export interface ITest {
+ id: string
+ name: string
+ categories?: ITest[]
+}
+
+const data: ITest[] = [
  {
-  name: 'Nam',
+  name: 'NAM',
   categories: [
    {
     name: 'ÁO NAM',
     categories: [
      {
-      name: 'Áo Polo'
+      name: 'Áo Polo',
+      id: 'fd71a62d704eb3a300631b5d'
      },
      {
-      name: 'Áo Khoác'
+      name: 'Áo Khoác',
+      id: 'd71a62d704eb3a300631b5d2'
      },
      {
-      name: 'Áo Nỉ'
+      name: 'Áo Nỉ',
+      id: '71a62d704eb3a300631b5d2e'
      },
      {
-      name: 'Áo Sơ Mi'
+      name: 'Áo Sơ Mi',
+      id: '1a62d704eb3a300631b5d2e7'
      },
      {
-      name: 'Áo Thun'
+      name: 'Áo Thun',
+      id: 'a62d704eb3a300631b5d2e76'
      },
      {
-      name: 'Áo Giữ Nhiệt'
+      name: 'Áo Giữ Nhiệt',
+      id: '62d704eb3a300631b5d2e769'
      },
      {
-      name: 'Áo Len'
+      name: 'Áo Len',
+      id: '2d704eb3a300631b5d2e7694'
      },
      {
-      name: 'Áo Vest'
+      name: 'Áo Vest',
+      id: 'd704eb3a300631b5d2e7694e'
      },
      {
-      name: 'Áo Chống Nắng'
+      name: 'Áo Chống Nắng',
+      id: '704eb3a300631b5d2e7694e6'
      }
-    ]
+    ],
+    id: 'ffd71a62d704eb3a300631b5'
    },
    {
     name: 'QUẦN NAM',
     categories: [
      {
-      name: 'Quần Âu'
+      name: 'Quần Âu',
+      id: '4eb3a300631b5d2e7694e6aa'
      },
      {
-      name: 'Quần Kaki'
+      name: 'Quần Kaki',
+      id: 'eb3a300631b5d2e7694e6aa5'
      },
      {
-      name: 'Quần Jeans'
+      name: 'Quần Jeans',
+      id: 'b3a300631b5d2e7694e6aa5f'
      },
      {
-      name: 'Quần Short'
+      name: 'Quần Short',
+      id: '3a300631b5d2e7694e6aa5f7'
      }
-    ]
+    ],
+    id: '04eb3a300631b5d2e7694e6a'
    },
    {
-    name: 'ĐỒ BỘ NAM'
+    name: 'ĐỒ BỘ NAM',
+    id: 'a300631b5d2e7694e6aa5f75'
    },
    {
     name: 'ĐỒ THỂ THAO NAM',
     categories: [
      {
-      name: 'Bộ Thể Thao'
+      name: 'Bộ Thể Thao',
+      id: '00631b5d2e7694e6aa5f7503'
      },
      {
-      name: 'Áo Thun Thể Thao'
+      name: 'Áo Thun Thể Thao',
+      id: '0631b5d2e7694e6aa5f75033'
      },
      {
-      name: 'Áo Polo Thể Thao'
+      name: 'Áo Polo Thể Thao',
+      id: '631b5d2e7694e6aa5f750339'
      },
      {
-      name: 'Quần Thể Thao'
+      name: 'Quần Thể Thao',
+      id: '31b5d2e7694e6aa5f7503397'
      }
-    ]
+    ],
+    id: '300631b5d2e7694e6aa5f750'
    },
    {
     name: 'ĐỒ MẶC TRONG NAM',
     categories: [
      {
-      name: 'Quần Lót'
+      name: 'Quần Lót',
+      id: 'b5d2e7694e6aa5f750339738'
      },
      {
-      name: 'Áo Ba Lỗ'
+      name: 'Áo Ba Lỗ',
+      id: '5d2e7694e6aa5f7503397388'
      }
-    ]
+    ],
+    id: '1b5d2e7694e6aa5f75033973'
    },
    {
     name: 'PHỤ KIỆN NAM',
     categories: [
      {
-      name: 'Giày'
+      name: 'Giày',
+      id: '2e7694e6aa5f7503397388a8'
      },
      {
-      name: 'Thắt lưng'
+      name: 'Thắt lưng',
+      id: 'e7694e6aa5f7503397388a89'
      },
      {
-      name: 'Phụ Kiện Khác'
+      name: 'Phụ Kiện Khác',
+      id: '7694e6aa5f7503397388a892'
      }
-    ]
+    ],
+    id: 'd2e7694e6aa5f7503397388a'
    },
    {
     name: 'NỔI BẬT',
     categories: [
      {
-      name: 'Hàng Mới Về'
+      name: 'Hàng Mới Về',
+      id: '94e6aa5f7503397388a8922d'
      },
      {
-      name: 'Khử Mùi Vượt Trội'
+      name: 'Khử Mùi Vượt Trội',
+      id: '4e6aa5f7503397388a8922d8'
      },
      {
-      name: 'Thoáng Mát Tối Đa'
+      name: 'Thoáng Mát Tối Đa',
+      id: 'e6aa5f7503397388a8922d8e'
      },
      {
-      name: 'Chống UV'
+      name: 'Chống UV',
+      id: '6aa5f7503397388a8922d8e2'
      }
-    ]
+    ],
+    id: '694e6aa5f7503397388a8922'
    }
-  ]
+  ],
+  id: 'bffd71a62d704eb3a300631b'
+ },
+ {
+  name: 'NỮ',
+  categories: [
+   {
+    name: 'ÁO NỮ',
+    categories: [
+     {
+      name: 'Áo Polo',
+      id: '5f7503397388a8922d8e2d7c'
+     },
+     {
+      name: 'Áo Khoác',
+      id: 'f7503397388a8922d8e2d7c0'
+     },
+     {
+      name: 'Áo Nỉ',
+      id: '7503397388a8922d8e2d7c01'
+     },
+     {
+      name: 'Áo Sơ Mi',
+      id: '503397388a8922d8e2d7c016'
+     },
+     {
+      name: 'Áo Thun',
+      id: '03397388a8922d8e2d7c016b'
+     },
+     {
+      name: 'Áo Giữ Nhiệt',
+      id: '3397388a8922d8e2d7c016b7'
+     },
+     {
+      name: 'Áo Len',
+      id: '397388a8922d8e2d7c016b7d'
+     },
+     {
+      name: 'Áo Vest',
+      id: '97388a8922d8e2d7c016b7db'
+     },
+     {
+      name: 'Áo Chống Nắng',
+      id: '7388a8922d8e2d7c016b7db1'
+     }
+    ],
+    id: 'a5f7503397388a8922d8e2d7'
+   },
+   {
+    name: 'QUẦN NỮ',
+    categories: [
+     {
+      name: 'Quần Âu',
+      id: '88a8922d8e2d7c016b7db17e'
+     },
+     {
+      name: 'Quần Kaki',
+      id: '8a8922d8e2d7c016b7db17e4'
+     },
+     {
+      name: 'Quần Jeans',
+      id: 'a8922d8e2d7c016b7db17e4c'
+     },
+     {
+      name: 'Quần Short',
+      id: '8922d8e2d7c016b7db17e4cb'
+     }
+    ],
+    id: '388a8922d8e2d7c016b7db17'
+   },
+   {
+    name: 'ĐỒ BỘ NỮ',
+    id: '922d8e2d7c016b7db17e4cb4'
+   },
+   {
+    name: 'ĐỒ THỂ THAO NỮ',
+    categories: [
+     {
+      name: 'Bộ Thể Thao',
+      id: '2d8e2d7c016b7db17e4cb47e'
+     },
+     {
+      name: 'Áo Thun Thể Thao',
+      id: 'd8e2d7c016b7db17e4cb47e2'
+     },
+     {
+      name: 'Áo Polo Thể Thao',
+      id: '8e2d7c016b7db17e4cb47e21'
+     },
+     {
+      name: 'Quần Thể Thao',
+      id: 'e2d7c016b7db17e4cb47e21d'
+     }
+    ],
+    id: '22d8e2d7c016b7db17e4cb47'
+   },
+   {
+    name: 'ĐỒ MẶC TRONG NỮ',
+    categories: [
+     {
+      name: 'Quần Lót',
+      id: 'd7c016b7db17e4cb47e21d62'
+     },
+     {
+      name: 'Áo Ba Lỗ',
+      id: '7c016b7db17e4cb47e21d623'
+     }
+    ],
+    id: '2d7c016b7db17e4cb47e21d6'
+   },
+   {
+    name: 'PHỤ KIỆN NỮ',
+    categories: [
+     {
+      name: 'Giày',
+      id: '016b7db17e4cb47e21d6230a'
+     },
+     {
+      name: 'Thắt lưng',
+      id: '16b7db17e4cb47e21d6230a4'
+     },
+     {
+      name: 'Phụ Kiện Khác',
+      id: '6b7db17e4cb47e21d6230a4e'
+     }
+    ],
+    id: 'c016b7db17e4cb47e21d6230'
+   },
+   {
+    name: 'NỔI BẬT',
+    categories: [
+     {
+      name: 'Hàng Mới Về',
+      id: '7db17e4cb47e21d6230a4e72'
+     },
+     {
+      name: 'Khử Mùi Vượt Trội',
+      id: 'db17e4cb47e21d6230a4e723'
+     },
+     {
+      name: 'Thoáng Mát Tối Đa',
+      id: 'b17e4cb47e21d6230a4e723c'
+     },
+     {
+      name: 'Chống UV',
+      id: '17e4cb47e21d6230a4e723c4'
+     }
+    ],
+    id: 'b7db17e4cb47e21d6230a4e7'
+   }
+  ],
+  id: 'aa5f7503397388a8922d8e2d'
  }
 ]
 
 const Header = () => {
+ const [isOpenMenuMobile, setIsOpenMenuMobile] = useState<boolean>(false)
+ const [isOpenSearchMobile, setIsOpenSearchMobile] = useState<boolean>(false)
+ const [collapseIds, setCollapseIds] = useState<string[]>([
+  'bffd71a62d704eb3a300631b'
+ ])
+ const refDivOverlay = useRef<HTMLDivElement>(null)
  const handleMouseEnter = () => {
-  window.document.body.style.backgroundColor = '#0000009e'
+  if (refDivOverlay.current) {
+   refDivOverlay.current.style.display = 'block'
+  }
  }
  const handleMouseLeave = () => {
-  window.document.body.style.backgroundColor = 'initial'
+  if (refDivOverlay.current) {
+   refDivOverlay.current.style.display = 'none'
+  }
  }
+ useEffect(() => {
+  if (refDivOverlay.current) {
+   refDivOverlay.current.style.display = 'none'
+  }
+ }, [])
+ const hanldeOnOpenCollapse = (id: string) => {
+  if (!collapseIds.includes(id)) {
+   setCollapseIds((state) => [...state, id])
+  }
+ }
+ const hanldeOnCloseCollapse = (id: string) => {
+  setCollapseIds((state) => [...state].filter((vl) => vl !== id))
+ }
+ const handleOnCloseSearchMobile = () => {
+  setIsOpenSearchMobile(false)
+ }
+ const handleOnOpenSearchMobile = () => {
+  setIsOpenSearchMobile(true)
+ }
+ const handleOnOpenMenuMobile = () => {
+  setIsOpenMenuMobile(true)
+ }
+ const handleOnCloseMenuMobile = () => {
+  setIsOpenMenuMobile(false)
+ }
+
  return (
-  <header className='bg-header bg-no-repeat bg-cover box-shadow-header border-1 border-zinc-400'>
-   <div className='max-w-7xl mx-auto'>
-    <div className='flex py-3 justify-between'>
-     <div>
-      <div className='lg:hidden'>
-       <CgMenu />
-      </div>
-      <section className='flex'>
-       <div className='h-[2.2rem] object-cover'>
-        <figure>
-         <Image
-          src='./images/logo.svg'
-          width={80}
-          height={30}
-          alt='logo'
-         />
-        </figure>
-       </div>
-       <div className='ml-6 h-[2.5rem] w-[28rem] flex'>
-        <input
-         className='rounded-l-md px-3 text-sm flex-1 transition-colors hover:border-orangeCt focus:border-orangeCt border-solid border-[white] border'
-         placeholder='Tìm kiếm'
+  <>
+   <div
+    ref={refDivOverlay}
+    className='absolute z-[1999] hidden lg:block w-full h-full left-0 bg-[#00000077]'
+   ></div>
+
+   {isOpenSearchMobile && (
+    <SearchMobile onCancelMenuSearch={handleOnCloseSearchMobile} />
+   )}
+   {isOpenMenuMobile && (
+    <MenuMobile
+     onCancelMenu={handleOnCloseMenuMobile}
+     collapseIds={collapseIds}
+     onOpenCollapse={hanldeOnOpenCollapse}
+     onCloseCollapse={hanldeOnCloseCollapse}
+     data={data}
+    />
+   )}
+   <div className='fixed z-[6000] top-0 w-full'>
+    <section className='bg-white lg:bg-[url("/images/background-header.webp")] bg-no-repeat h-[62px] lg:h-[104px] bg-cover box-shadow-header border-1 border-zinc-400'>
+     <header className='px-3 sm:px-10 lg:px-6'>
+      <div className='max-w-7xl mx-auto'>
+       <HeaderItemAbove
+        onOpenMenuMobile={handleOnOpenMenuMobile}
+        onOpenSearchMobile={handleOnOpenSearchMobile}
+       />
+       <section className='hidden lg:block'>
+        <HeaderItemUnder
+         onMouseEnterItem={handleMouseEnter}
+         onMouseLeaveItem={handleMouseLeave}
+         categories={data}
         />
-        <button className='rounded-r-md bg-orangeCt w-[5rem] flex justify-center items-center text-xl '>
-         <FiSearch />
-        </button>
-       </div>
-      </section>
-     </div>
-     <ul className='flex items-center font-semibold'>
-      <li className='flex items-center '>
-       <span>
-        <IoCallSharp />
-       </span>
-       <a
-        href='tel:+84 363319792'
-        className='text-textBlueCt mx-1'
-       >
-        1800 2086
-       </a>
-       <span className='text-[12px] leading-normal bg-orangeCt flex items-center h-[26px] rounded-r-[13px] rounded-l-[13px] px-[10px] '>
-        FREE
-       </span>
-      </li>
-      <li className='mx-[10px]'>-</li>
-      <li className='flex items-center'>
-       <span className='text-textBlueCt text-[14px]'>Gọi đặt hàng</span>
-       <span className='mx-1'>
-        <IoCallSharp />
-       </span>
-       <span className='text-textBlueCt'>0363319792</span>
-      </li>
-     </ul>
-    </div>
-    <div className='flex justify-between relative items-center text-textBlueCt text-[14px] font-semibold pt-2 pb-1'>
-     <ul className='flex'>
-      <li className='item-nav item-spacing'>
-       <span className='name-item'>SALE OFF 50%</span>
-      </li>
-      <li
-       className='item-nav item-spacing'
-       onMouseEnter={handleMouseEnter}
-       onMouseLeave={handleMouseLeave}
-      >
-       <span className='name-item'>NỮ</span>
-       <ul className='list-item-nav text-[black] w-full hidden p-6 bg-white rounded-b-md absolute z-[2000]'>
-        <li>
-         <section className='grid grid-cols-5'>
-          <div className='col-span-4'>
-           <ul className='grid grid-cols-4 gap-3'>
-            {<MegaMenu categories={data[0]} />}
-           </ul>
-          </div>
-          <div className='col-span-1'>
-           <figure className='overflow-hidden rounded-sm'>
-            <img
-             src='https://bizweb.dktcdn.net/thumb/grande/100/438/408/themes/936254/assets/link_image_3_1.jpg?1705714645671'
-             alt=''
-            />
-           </figure>
-          </div>
-         </section>
-        </li>
-       </ul>
-      </li>
-      <li className='item-nav item-spacing'>
-       <span className='name-item'>NAM</span>
-      </li>
-      <li className='item-nav item-spacing'>
-       <span className='name-item'>TRẺ EM</span>
-      </li>
-      <li className='item-nav item-spacing'>
-       <span className='name-item'>BỘ SƯU TẬP</span>
-      </li>
-      <li className='item-nav item-spacing'>
-       <span className='name-item'>ĐỒNG PHỤC</span>
-      </li>
-      <li className='item-nav item-spacing'>
-       <span className='name-item'>VỀ YODY</span>
-      </li>
-      <li className='item-nav item-spacing'>
-       <span className='name-item'>BLOG</span>
-      </li>
-     </ul>
-     <ul className='flex'>
-      <li className='flex justify-center items-center'>
-       <div className='relative'>
-        <figure>
-         <img
-          width={28}
-          src='https://bizweb.dktcdn.net/100/438/408/themes/936254/assets/icon-cart-header.svg?1705641455803'
-          alt=''
-         />
-        </figure>
-        <p className='bg-orangeCt flex justify-center items-center absolute top-[-5px] right-[-8px] w-[20px] h-[20px] rounded-[50%] text-sm font-semibold leading-none'>
-         0
-        </p>
-       </div>
-       <span className='ml-3 text-[15px] leading-none pt-1'>GIỎ HÀNG</span>
-      </li>
-      <li className='flex items-center ml-4'>
-       <span className='text-[26px]'>
-        <BiUser />
-       </span>
-       <span className='ml-1 leading-none pt-1'>TÀI KHOẢN</span>
-       <span className='inline-block ml-1 font-light'> /</span>
-       <span className='ml-1 leading-none pt-1'>ĐĂNG NHẬP</span>
-      </li>
-     </ul>
-    </div>
+       </section>
+      </div>
+     </header>
+    </section>
    </div>
-  </header>
+  </>
  )
 }
 
