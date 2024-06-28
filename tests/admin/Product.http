@@ -1,0 +1,161 @@
+@baseUrl = http://localhost:3008/admin
+
+
+### Product
+POST {{baseUrl}}/product/ HTTP/1.1
+content-type: application/json
+
+{
+    "name":"Áo Polo Thể Thao Nữ Airycool Trước",
+    "typeSale":"none",
+    "price":350000,
+    "detail":"" ,
+    "categoryId": "65e4afbba59d2fad3faf9e33",
+    "status": "published" 
+}
+
+###
+PATCH {{baseUrl}}/product/ HTTP/1.1
+content-type: application/json
+
+{
+    "id": "1812bc3f68ee253ceacdf428",
+    # "name":"Áo Polo Thể Thao Nữ Airycool Trước",
+    "price":340000,
+    # "detail":"" ,
+    "categoryId": "65e4b042a59d2fad3faf9e38",
+    "status": "published" 
+}
+
+
+###
+# GET {{baseUrl}}/products?page=2&limit=20&search=hà thanh tuấn&status=0 HTTP/1.1
+# GET {{baseUrl}}/products?page=1&limit=20&categories=662d2f5b47523bd3bb0e68eb HTTP/1.1
+GET {{baseUrl}}/products?page=1&limit=20&category=has&categoryStatus=1&option=has&seo=none&soldOut=none HTTP/1.1
+# GET {{baseUrl}}/products?page=1&status=1&category=quan-nu,na HTTP/1.1
+content-type: application/json
+
+###
+GET {{baseUrl}}/product/2459a3f103fe705113677102 HTTP/1.1
+content-type: application/json
+
+
+### Option------------
+DELETE {{baseUrl}}/product/option/12bc3f68ee253ceacdf4287e HTTP/1.1
+content-type: application/json
+###
+PATCH {{baseUrl}}/product/option/ HTTP/1.1
+content-type: application/json
+
+{
+    "optionId": "812bc3f68ee253ceacdf4287",
+    "updateData" : {
+        "color": "Tím Nhạt",
+        "colorCode": "#b5787d",
+    }
+}
+
+### Upload-Option----------------
+PATCH {{baseUrl}}/product/delete-upload-option/ HTTP/1.1
+content-type: application/json
+
+{
+    "optionId": "2bc3f68ee253ceacdf4287ea",
+    "uploadId":"53ceacdf4287ea8bf6593bbe"
+}
+
+###
+PATCH {{baseUrl}}/product/add-upload-option/ HTTP/1.1
+content-type: application/json
+
+{
+    "optionId": "2bc3f68ee253ceacdf4287ea",
+}
+
+### SizeAmount-Option----------------
+PATCH {{baseUrl}}/product/update-size-amount-option/ HTTP/1.1
+content-type: application/json
+
+{
+    "optionId": "812bc3f68ee253ceacdf4287",
+    "sizeAmountId":"8d75808c1bbdd10bea503162",
+    "updateData" : {
+        "size": "M",
+        "amount": 9
+    }
+}
+
+###
+PATCH {{baseUrl}}/product/delete-size-amount-option/ HTTP/1.1
+content-type: application/json
+
+{
+    "optionId": "812bc3f68ee253ceacdf4287",
+    "sizeAmountId":"8d75808c1bbdd10bea503162"
+}
+
+###
+PATCH {{baseUrl}}/product/add-size-amount-option/ HTTP/1.1
+content-type: application/json
+
+{
+    "optionId": "812bc3f68ee253ceacdf4287",
+    "sizeAmountId":"8d75808c1bbdd10bea503162",
+    "updateDatas" : [{
+        "size": "XXL",
+        "amount": 9
+    },{
+        "size": "S",
+        "amount": 9
+    },{
+        "size": "M",
+        "amount": 9
+    }]
+}
+
+### 
+PATCH {{baseUrl}}/product/update-mediaUrl/ HTTP/1.1
+content-type: application/json
+
+{
+    "optionId": "8b02856848feb255ab29a310",
+    "mediaUrlId":"856848feb255ab29a310eb73",
+    "order": 0
+}
+
+###
+
+### Product Meta Seo
+POST {{baseUrl}}/product/meta-seo/ HTTP/1.1
+content-type: application/json
+
+{
+    "title" : "San pham",
+    "url" : "https://seothetop.com/seo-onpage/meta-tag-seo-157366.html",
+    "description" : "Open Graph ban đầu được Facebook giới thiệu để cho phép bạn kiểm soát giao diện của một trang khi được chia sẻ trên mạng xã hội.",
+    "imageUrl": "https://bizweb.dktcdn.net/thumb/grande/100/438/408/products/ao-chong-nang-nu-dang-dai-thoang-khi-acn6010-xnh-06259-yody.jpg",
+    "productId" : "1812bc3f68ee253ceacdf428"
+}
+
+###
+GET {{baseUrl}}/product/meta-seo/1812bc3f68ee253ceacdf428 HTTP/1.1
+content-type: application/json
+
+###
+PATCH {{baseUrl}}/product/meta-seo/ HTTP/1.1
+content-type: application/json
+
+{
+    "id": "1812bc3f68ee253ceacdf408",
+    "title": "Sản phẩm 2 nè nha",
+    "url": "ưefewf"
+    # "description": "ưefewfwe"
+    # "imageUrl": "ưefewfwefwef"
+   
+}
+
+
+
+
+
+

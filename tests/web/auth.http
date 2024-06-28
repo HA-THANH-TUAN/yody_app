@@ -1,0 +1,52 @@
+@baseUrl = http://localhost:3008/web/auth
+
+# get categories
+POST {{baseUrl}}/login HTTP/1.1
+content-type: application/json
+
+{
+    "email": "s2hathanhtuan2s@gmail.com",
+    "password": "1111"
+}
+
+###
+# get categories
+POST {{baseUrl}}/register HTTP/1.1
+content-type: application/json
+
+{
+    "fullName": "Ha Thanh Tuan",
+    "email": "s2hathanhtuan2s@gmail.com",
+    "phone": "0363319792",
+    "password": "1111"
+}
+
+###
+# get categories
+POST {{baseUrl}}/refresh-token HTTP/1.1
+content-type: application/json
+
+{
+    "refreshToken": "65d9adf36eba10d665d58eaf"
+}
+
+###
+# get categories
+POST {{baseUrl}}/reset-password HTTP/1.1
+content-type: application/json
+
+{
+    "email": "s2hathanhtuan2s@gmail.com"
+}
+
+
+###
+# verify-reset-password
+PATCH  {{baseUrl}}/verify-reset-password HTTP/1.1
+content-type: application/json
+
+{
+    "userId": "65d9adf36eba10d665d58eaf",
+    "code": "12345678"
+}
+

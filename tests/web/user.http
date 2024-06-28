@@ -1,0 +1,33 @@
+@baseUrl = http://localhost:3008/web/user
+
+POST {{baseUrl}}/add-user-address HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2MWI3YmZhMDEzNThlYzgyYzAyZTJiMCIsImVtYWlsIjoiczJoYXRoYW5odHVhbjJzQGdtYWlsLmNvbSIsInJvbGUiOlsxXSwiaWF0IjoxNzEzNzczNzc5LCJleHAiOjE3MTQxMzM3Nzl9.7AiAEGkrVeX9qEMLkTFyFoGcDWuejuIrTAIg62EzduU
+
+{
+    "fullName" : "Ha Thanh Tuan",
+    "phone" : "0363319792",
+    "company" : "Student",
+    "hamlet" : "Thôn Tân Hiệp",
+    "ward" : "Xã Ninh Thượng",
+    "district" : "Thị xã Ninh Hòa",
+    "province" : "Tỉnh Khánh Hòa",
+    "isDefault" : false
+}
+### edit address
+
+POST {{baseUrl}}/edit-user-address HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2MWI3YmZhMDEzNThlYzgyYzAyZTJiMCIsImVtYWlsIjoiczJoYXRoYW5odHVhbjJzQGdtYWlsLmNvbSIsInJvbGUiOlsxXSwiaWF0IjoxNzEzNzczNzc5LCJleHAiOjE3MTQxMzM3Nzl9.7AiAEGkrVeX9qEMLkTFyFoGcDWuejuIrTAIg62EzduU
+
+{
+    "id": "662672029fd6e5aeef92344e",
+    # "fullName" : "Ha Thanh Tuan",
+    # "phone" : "0363319792",
+    # "company" : "Student",
+    # "hamlet" : "Thôn Tân Hiệp",
+    # "ward" : "Xã Ninh Thượng",
+    # "district" : "Thị xã Ninh Hòa",
+    "province" : "Tỉnh Khánh Hòa",
+    "isDefault" : true
+}

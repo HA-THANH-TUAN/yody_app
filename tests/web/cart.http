@@ -1,0 +1,19 @@
+@baseUrl = http://localhost:3001/web/cart
+
+# get categories
+POST {{baseUrl}}/add-product-cart HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2MWI3YmZhMDEzNThlYzgyYzAyZTJiMCIsImVtYWlsIjoiczJoYXRoYW5odHVhbjJzQGdtYWlsLmNvbSIsInJvbGUiOlsxXSwiaWF0IjoxNzEzNzczNzc5LCJleHAiOjE3MTQxMzM3Nzl9.7AiAEGkrVeX9qEMLkTFyFoGcDWuejuIrTAIg62EzduU
+
+{
+    "productId": "459a3f103fe7051136771023" ,
+    "optionId": "23d04278b87ffc2703ec08fe" ,
+    "sizeId": "ce1b3f952dd48c0604d91726",
+    "amount":1
+}
+
+###
+# get categories
+GET {{baseUrl}}/get-product-cart HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2MWI3YmZhMDEzNThlYzgyYzAyZTJiMCIsImVtYWlsIjoiczJoYXRoYW5odHVhbjJzQGdtYWlsLmNvbSIsInJvbGUiOlsxXSwiaWF0IjoxNzEzMTUzMTAxLCJleHAiOjE3MTM1MTMxMDF9.yprtCCmqLYSNbJv9GImLkk9IzzAIdQdVjHu6SNpgVDA

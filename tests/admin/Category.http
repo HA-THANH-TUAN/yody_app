@@ -1,0 +1,26 @@
+@baseUrl = http://localhost:3008/admin
+
+# get categories
+GET {{baseUrl}}/categories HTTP/1.1
+content-type: application/json
+
+###
+#get category
+GET {{baseUrl}}/category/662d9d05b721b7a2a991ab24 HTTP/1.1
+content-type: application/json
+
+###
+#create category
+POST {{baseUrl}}/category HTTP/1.1
+content-type: application/json
+
+{
+    "name":"Phụ Kiện Nữ",
+    "slug":"phu-kien-nu",
+    "parentId":"65e4ad9af42a840a92e81178"
+}
+
+###
+#delete category
+DELETE  {{baseUrl}}/category/65e4aff3a59d2fad3faf9e36 HTTP/1.1
+content-type: application/json

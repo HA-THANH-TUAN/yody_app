@@ -1,0 +1,20 @@
+@baseUrl = http://localhost:3008/web/product
+
+# get categories
+GET {{baseUrl}}/get-products?cs=nu&srt=nAsc&mnp=300000&mxp=450000&page=1 HTTP/1.1
+content-type: application/json
+# get categories
+# GET {{baseUrl}}/get-products HTTP/1.1
+# content-type: application/json
+
+###
+# search categories
+GET {{baseUrl}}/get-products?s=khoa&srtp=asc&mnp=30000&mxp=450000&page=1 HTTP/1.1
+content-type: application/json
+
+
+###
+# get categories
+GET {{baseUrl}}/get-product-cart HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2MWI3YmZhMDEzNThlYzgyYzAyZTJiMCIsImVtYWlsIjoiczJoYXRoYW5odHVhbjJzQGdtYWlsLmNvbSIsInJvbGUiOlsxXSwiaWF0IjoxNzEzMTUzMTAxLCJleHAiOjE3MTM1MTMxMDF9.yprtCCmqLYSNbJv9GImLkk9IzzAIdQdVjHu6SNpgVDA
