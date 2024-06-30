@@ -1,12 +1,39 @@
-import { Button, Col, Form, FormInstance, Input, Radio, Row, Select, SelectProps } from 'antd';
+import { Button, Col, Form, FormInstance, Input, Radio, Row, SelectProps } from 'antd';
+import Select, { DefaultOptionType } from 'antd/es/select';
 import React, { FC } from 'react';
-import { IFormCreateProductData, IOptionProductData } from '../Pages/Products/ProductCreate/ProductCreate';
-import { formatMoney, genSlug } from '../utils/common';
-import EditorDescription from '../Pages/Products/ProductCreate/EditorDescription';
-import FormUploadProductImage from '../Pages/Products/ProductCreate/FormUploadProductImage';
+import { EnumCommon } from '../../../Models/common';
+import { RcFile } from 'antd/es/upload';
+import { IOptionProductData } from './ProductCreate';
 import { IoMdAdd } from 'react-icons/io';
-import { DefaultOptionType } from 'antd/es/select';
-import { RcFile, UploadFile } from 'antd/es/upload';
+import { formatMoney, genSlug } from '../../../utils/common';
+import EditorDescription from './EditorDescription';
+
+export interface IProductCreatorDataForm {
+  id: string;
+  name: string;
+  detail: string;
+  price: string;
+  slug: string;
+  categoryId: string;
+  status: string;
+  options: IOptionProductData[];
+}
+
+interface IProductCreatorForm {
+  categories: DefaultOptionType[];
+  statusGetCategories: EnumCommon['statusApiThunk'];
+  productCreatorDataForm: FormInstance<IProductCreatorDataForm>;
+  actionProductUploadMedia: (file: RcFile, optionId: string) => Promise<string>;
+  actionReProductUploadMedia: (file: RcFile, optionId: string, mediaId: string) => Promise<string>;
+  onDeleteOptionProduct: (optionId: string) => void;
+  onEditOptionForm: (productOption: IOptionProductData, id: string) => void;
+  onRemoveMedia: (optionId: string, uid: string) => void;
+  onRemoveOptionProduct: (uid: string, optionId: string) => void;
+  onCreateProduct: (values: IProductCreatorDataForm) => void;
+  onAddOptionProduct: () => void;
+  onChangeMediaOrder: () => void;
+  onChangeOptionProductOrder: () => void;
+}
 
 type TagRender = SelectProps['tagRender'];
 type OptionRender = SelectProps['optionRender'];
@@ -42,38 +69,24 @@ export const optionRender: OptionRender = (props) => {
     );
   }
 };
-export interface IFormCreateProduct {
-  formCreateProduct: FormInstance<IFormCreateProductData>;
-  options: DefaultOptionType[];
-  statusGetCategories: 'pending' | 'rejected' | 'fulfilled' | 'idle';
-  actionUpload: (file: RcFile, id: string) => Promise<string>;
-  actionReUpload: (file: RcFile, optionId: string, productImageId: string) => Promise<string>;
-  onDeleteOption: (id: string) => void;
-  onEditOption: (productColor: IOptionProductData, id: string) => void;
-  onRemoveMedia: (file: UploadFile<any>, id: string) => void;
-  onSubmitForm: (values: IFormCreateProductData) => void;
-  onAddOption: () => void;
-  onSortOptionImage: (optionId: string, productImageId: string, value: string) => void;
-  onSortOption: (optionId: string, value: string) => void;
-  onRemoveOptionImage: (optionId: string, productImageId: string) => void;
-}
-const FormCreateProduct: FC<IFormCreateProduct> = ({
-  actionUpload,
-  actionReUpload,
-  options,
-  formCreateProduct,
+
+const ProductCreatorForm: FC<IProductCreatorForm> = ({
+  categories,
   statusGetCategories,
-  onSubmitForm,
-  onAddOption,
-  onDeleteOption,
-  onEditOption,
+  productCreatorDataForm,
+  actionProductUploadMedia,
+  actionReProductUploadMedia,
+  onDeleteOptionProduct,
+  onEditOptionForm,
   onRemoveMedia,
-  onSortOptionImage,
-  onSortOption,
-  onRemoveOptionImage
+  onRemoveOptionProduct,
+  onCreateProduct,
+  onAddOptionProduct,
+  onChangeMediaOrder,
+  onChangeOptionProductOrder
 }) => {
   return (
-    <Form className='mx-auto' onFinish={onSubmitForm} form={formCreateProduct} layout='vertical'>
+    <Form className='mx-auto' onFinish={onCreateProduct} form={productCreatorDataForm} layout='vertical'>
       <Row gutter={[20, 20]}>
         <Col sm={{ span: 24 }} xl={{ span: 24 }}>
           <div className='bg-white px-5 pt-3 rounded-md'>
@@ -85,7 +98,7 @@ const FormCreateProduct: FC<IFormCreateProduct> = ({
                   <Input
                     onBlur={(e) => {
                       const data = e.currentTarget.value;
-                      formCreateProduct.setFieldValue('slug', genSlug(data));
+                      productCreatorDataForm.setFieldValue('slug', genSlug(data));
                     }}
                   />
                 </Form.Item>
@@ -102,9 +115,9 @@ const FormCreateProduct: FC<IFormCreateProduct> = ({
                     mode='multiple'
                     tagRender={tagRender}
                     optionRender={optionRender}
-                    options={options}
+                    options={categories}
                     onSelect={(vl: string) => {
-                      formCreateProduct.setFieldValue('categoryId', vl);
+                      productCreatorDataForm.setFieldValue('categoryId', vl);
                     }}
                   />
                 </Form.Item>
@@ -116,9 +129,9 @@ const FormCreateProduct: FC<IFormCreateProduct> = ({
                       const vl = e.target.value.replace(/\./g, '');
                       const price = Number(vl);
                       if (!isNaN(price) && !(price === Infinity)) {
-                        formCreateProduct.setFieldValue('price', formatMoney(price));
+                        productCreatorDataForm.setFieldValue('price', formatMoney(price));
                       } else {
-                        formCreateProduct.setFieldValue('price', formatMoney(0));
+                        productCreatorDataForm.setFieldValue('price', formatMoney(0));
                       }
                     }}
                   />
@@ -135,9 +148,9 @@ const FormCreateProduct: FC<IFormCreateProduct> = ({
               <Col sm={{ span: 24 }}>
                 <Form.Item name='detail' label={<span className='font-medium'>Description</span>}>
                   <EditorDescription
-                    dataDescription={formCreateProduct.getFieldValue('detail')}
+                    dataDescription={productCreatorDataForm.getFieldValue('detail')}
                     setDataDesciption={(vl: string) => {
-                      formCreateProduct.setFieldValue('detail', vl);
+                      productCreatorDataForm.setFieldValue('detail', vl);
                     }}
                   />
                 </Form.Item>
@@ -149,7 +162,7 @@ const FormCreateProduct: FC<IFormCreateProduct> = ({
           <div className='bg-white px-5 pt-3 rounded-md'>
             <h2 className='text-center text-lg font-medium'>
               <span>ProductOptions</span>{' '}
-              <Button type='dashed' size='small' onClick={onAddOption}>
+              <Button type='dashed' size='small' onClick={onAddOptionProduct}>
                 <IoMdAdd />
               </Button>
             </h2>
@@ -160,20 +173,21 @@ const FormCreateProduct: FC<IFormCreateProduct> = ({
                     <>
                       {fields.map((props, index) => {
                         return (
-                          <FormUploadProductImage
-                            key={formCreateProduct.getFieldValue('options')?.[index].id}
-                            onAddUploadNewMediaUrl={() => {}}
-                            propCols={{ sm: 4 }}
-                            onSortOption={onSortOption}
-                            onSortOptionImage={onSortOptionImage}
-                            onRemoveOptionImage={onRemoveOptionImage}
-                            productColor={formCreateProduct.getFieldValue('options')[index]}
-                            actionUpload={actionUpload}
-                            actionReUpload={actionReUpload}
-                            onDeleteOption={onDeleteOption}
-                            onEditOption={onEditOption}
-                            onRemoveMedia={onRemoveMedia}
-                          />
+                          <div></div>
+                          // <FormUploadProductImage
+                          //   key={formCreateProduct.getFieldValue('options')?.[index].id}
+                          //   onAddUploadNewMediaUrl={() => {}}
+                          //   propCols={{ sm: 4 }}
+                          //   onSortOption={onSortOption}
+                          //   onSortOptionImage={onSortOptionImage}
+                          //   onRemoveOptionImage={onRemoveOptionImage}
+                          //   productColor={formCreateProduct.getFieldValue('options')[index]}
+                          //   actionUpload={actionUpload}
+                          //   actionReUpload={actionReUpload}
+                          //   onDeleteOption={onDeleteOption}
+                          //   onEditOption={onEditOption}
+                          //   onRemoveMedia={onRemoveMedia}
+                          // />
                         );
                       })}
                     </>
@@ -182,8 +196,8 @@ const FormCreateProduct: FC<IFormCreateProduct> = ({
               </Form.List>
             </Form.Item>
           </div>
-          {formCreateProduct.getFieldValue('options').length > 0 && (
-            <Button type='dashed' size='small' onClick={onAddOption}>
+          {productCreatorDataForm.getFieldValue('options').length > 0 && (
+            <Button type='dashed' size='small' onClick={onAddOptionProduct}>
               <IoMdAdd />
             </Button>
           )}
@@ -193,7 +207,7 @@ const FormCreateProduct: FC<IFormCreateProduct> = ({
       <Form.Item className='mt-5 flex justify-center'>
         <Button
           onClick={() => {
-            formCreateProduct.submit();
+            productCreatorDataForm.submit();
           }}
           type='primary'
         >
@@ -204,4 +218,4 @@ const FormCreateProduct: FC<IFormCreateProduct> = ({
   );
 };
 
-export default FormCreateProduct;
+export default ProductCreatorForm;

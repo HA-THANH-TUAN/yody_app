@@ -2,8 +2,9 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { RootState } from '../app/store';
 import CategoryApi from '../apis/category';
-import { PayloadUpdateCategory } from '../Models/request';
-import { ICategoryResponse, IMetaDataResponseCategoryForId } from '../Models/response';
+import { PayloadCreateCategory, PayloadUpdateCategory } from '../Models/request';
+import { ICategoryResponse, IMetaDataResponseCategory } from '../Models/response';
+import { EnumCommon } from '../Models/common';
 
 export const getCategories = createAsyncThunk('category/getCategories', async (undefined, { rejectWithValue }) => {
   const data = await CategoryApi.getCategories();
@@ -13,6 +14,19 @@ export const getCategories = createAsyncThunk('category/getCategories', async (u
   }
   return data;
 });
+export const createCategory = createAsyncThunk(
+  'category/createCategory',
+  async (payload: PayloadCreateCategory, { rejectWithValue }) => {
+    if (payload.parentId !== undefined && payload.parentId === '') {
+      delete payload.parentId;
+    }
+    const data = await CategoryApi.createCategory(payload);
+    if (data.status > 300) {
+      throw rejectWithValue(data);
+    }
+    return data;
+  }
+);
 export const getCategoryForId = createAsyncThunk(
   'category/getCategoryForId',
   async (id: string, { rejectWithValue }) => {
@@ -33,19 +47,30 @@ export const updateCategory = createAsyncThunk(
     return data;
   }
 );
+export const deleteCategory = createAsyncThunk('category/delete', async (id: string, { rejectWithValue }) => {
+  const data = await CategoryApi.deleteCategory(id);
+  if (data.status > 300) {
+    throw rejectWithValue(data);
+  }
+  return data;
+});
 
 interface ICategoryPage {
   categories: ICategoryResponse[];
-  categoryDetail: IMetaDataResponseCategoryForId | null;
-  statusUpdateCategory: 'pending' | 'rejected' | 'fulfilled' | 'idle';
-  statusGetCategories: 'pending' | 'rejected' | 'fulfilled' | 'idle';
+  statusUpdateCategory: EnumCommon['statusApiThunk'];
+  statusGetCategories: EnumCommon['statusApiThunk'];
+  statusGetCategory: EnumCommon['statusApiThunk'];
+  statusCreateCategory: EnumCommon['statusApiThunk'];
+  statusDeleteCategory: EnumCommon['statusApiThunk'];
 }
 
 const initialState: ICategoryPage = {
   categories: [],
-  categoryDetail: null,
   statusUpdateCategory: 'idle',
-  statusGetCategories: 'idle'
+  statusGetCategories: 'idle',
+  statusGetCategory: 'idle',
+  statusCreateCategory: 'idle',
+  statusDeleteCategory: 'idle'
 };
 
 export const categoryPageSlice = createSlice({
@@ -70,14 +95,13 @@ export const categoryPageSlice = createSlice({
 
     builder.addCase(getCategoryForId.fulfilled, (state, action) => {
       console.log('forId in redux');
-      state.categoryDetail = action.payload.metadata ?? null;
-      state.statusGetCategories = 'fulfilled';
+      state.statusGetCategory = 'fulfilled';
     });
     builder.addCase(getCategoryForId.pending, (state, action) => {
-      state.statusGetCategories = 'pending';
+      state.statusGetCategory = 'pending';
     });
     builder.addCase(getCategoryForId.rejected, (state, action) => {
-      state.statusGetCategories = 'rejected';
+      state.statusGetCategory = 'rejected';
     });
 
     builder.addCase(updateCategory.fulfilled, (state, action) => {
@@ -89,13 +113,34 @@ export const categoryPageSlice = createSlice({
     builder.addCase(updateCategory.rejected, (state, action) => {
       state.statusUpdateCategory = 'rejected';
     });
+
+    builder.addCase(createCategory.fulfilled, (state, action) => {
+      state.statusCreateCategory = 'fulfilled';
+    });
+    builder.addCase(createCategory.pending, (state, action) => {
+      state.statusCreateCategory = 'pending';
+    });
+    builder.addCase(createCategory.rejected, (state, action) => {
+      state.statusCreateCategory = 'rejected';
+    });
+
+    builder.addCase(deleteCategory.fulfilled, (state, action) => {
+      state.statusDeleteCategory = 'fulfilled';
+    });
+    builder.addCase(deleteCategory.pending, (state, action) => {
+      state.statusDeleteCategory = 'pending';
+    });
+    builder.addCase(deleteCategory.rejected, (state, action) => {
+      state.statusDeleteCategory = 'rejected';
+    });
   }
 });
 
 export const selectCategories = (state: RootState) => state.categoryPage.categories;
-
-export const selectCategoryDetail = (state: RootState) => state.categoryPage.categoryDetail;
 export const selectStatusUpdateCategory = (state: RootState) => state.categoryPage.statusUpdateCategory;
 export const selectStatusGetCategories = (state: RootState) => state.categoryPage.statusGetCategories;
+export const selectStatusGetCategory = (state: RootState) => state.categoryPage.statusGetCategory;
+export const selectStatusCreateCategory = (state: RootState) => state.categoryPage.statusCreateCategory;
+export const selectStatusDeleteCategory = (state: RootState) => state.categoryPage.statusDeleteCategory;
 
 export default categoryPageSlice.reducer;

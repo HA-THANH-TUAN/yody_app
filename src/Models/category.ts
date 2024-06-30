@@ -3,7 +3,7 @@ export interface ICategory {
   name: string;
   slug: string;
   parentId: null | string;
-  isDeleted: boolean;
+  status: 0 | 1;
   urlImage: null | string;
   grade: number;
   createdAt: string;

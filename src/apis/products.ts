@@ -1,13 +1,14 @@
 import {
   PayloadCreateProduct,
   PayloadDeleteUploadOptionProduct,
-  PayloadGetProducts,
-  PayloadUploadProduct
+  PayloadUpdateProduct,
+  PayloadUpdateUploadOptionProduct
 } from '../Models/request';
 import {
   ICommonResponse,
   IMetaDataResponseCreateProduct,
   IMetaDataResponseGetProducts,
+  IMetaDataResponseGetSeoProduct,
   IProuductsMetaData,
   IResponse
 } from '../Models/response';
@@ -23,6 +24,9 @@ class ProductApi {
   }
   static createProduct(payload: PayloadCreateProduct) {
     return axiosInstance.post<any, IResponse<IMetaDataResponseCreateProduct>>(`/admin/product`, payload);
+  }
+  static updateProduct(payload: PayloadUpdateProduct) {
+    return axiosInstance.patch<any, IResponse<ICommonResponse>>(`/admin/product`, payload);
   }
   static uploadProduct(payload: FormData) {
     return axiosInstance.post<any, IResponse<IMetaDataResponseCreateProduct>>(`/admin/upload-product`, payload);
@@ -48,14 +52,22 @@ class ProductApi {
   static deleteUploadOptionProduct(payload: PayloadDeleteUploadOptionProduct) {
     return axiosInstance.patch<any, ICommonResponse>(`/admin/product/delete-upload-option`, payload);
   }
+  static updateUploadOptionProduct(payload: PayloadUpdateUploadOptionProduct) {
+    return axiosInstance.patch<any, ICommonResponse>(`/admin/product/update-mediaUrl`, payload);
+  }
+  // meta seo
+  static getMetaSeoProduct(id: string) {
+    return axiosInstance.get<any, IResponse<IMetaDataResponseGetSeoProduct>>(`/admin/product/meta-seo/${id}`);
+  }
 }
 export default ProductApi;
 
 export interface PayloadAddSizeAmountOption {
   optionId: string;
-  updateDatas?: {
+  sizeAmounts: {
     size: string;
     amount: number;
+    order: number;
   }[];
 }
 
@@ -63,19 +75,21 @@ export interface PayloadUpdateOptionProduct {
   optionId: string;
   updateData: {
     color?: string;
+    order?: number;
     colorCode?: string;
   };
 }
 export interface PayloadDeleteSizeAmountOption {
   optionId: string;
-  sizeAmountId: string;
+  sizeAmountIds: string[];
 }
 
 export interface PayloadUpdateSizeAmountOption {
   optionId: string;
-  sizeAmountId: string;
-  updateData: {
+  sizeAmounts: {
+    id: string;
     size?: string;
     amount?: number;
-  };
+    order?: number;
+  }[];
 }

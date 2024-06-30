@@ -4,25 +4,24 @@ import { IProuductsMetaData } from '../../../Models/response';
 import { BiExpand } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 import { GrCloudUpload } from 'react-icons/gr';
-import { MdDelete } from 'react-icons/md';
+import { MdCreditScore, MdDelete, MdOutlineCreate } from 'react-icons/md';
 import { IoMdSave } from 'react-icons/io';
 import { BaseButtonProps } from 'antd/es/button/button';
+import { IProduct } from '../../../Models/product';
+import { formatMoney } from '../../../utils/common';
+import { FaRegEdit } from 'react-icons/fa';
 interface DataType {
   key: string;
   name: string;
   status: ReactNode;
-  sale: string;
-  typeSale: 'hard' | 'percent' | 'none';
+  sale: ReactNode;
+  seo: ReactNode;
   price: string;
-  createdAt: string;
   action: ReactNode;
-}
-interface IProductStatusTag {
-  status: 'published' | 'unPublished';
 }
 
 interface IProductAction {
-  status: IProductStatusTag['status'];
+  status: IProduct['status'];
   // activeEditButton: string;
   productId: string;
 }
@@ -33,13 +32,8 @@ const columns: TableColumnsType<DataType> = [
   {
     title: 'Name',
     dataIndex: 'name',
-    key: 'name',
-    filters: [
-      { text: 'Joe', value: 'Joe' },
-      { text: 'Jim', value: 'Jim' }
-    ],
-    sorter: (a, b) => a.name.length - b.name.length,
-    ellipsis: true
+    key: 'name'
+    // ellipsis: true
   },
   {
     title: 'Status',
@@ -60,20 +54,13 @@ const columns: TableColumnsType<DataType> = [
     className: 'w-24',
     dataIndex: 'sale',
     key: 'sale',
-    filters: [
-      { text: 'London', value: 'London' },
-      { text: 'New York', value: 'New York' }
-    ],
     ellipsis: true
   },
   {
-    title: 'Date',
-    dataIndex: 'date',
-    key: 'date',
-    filters: [
-      { text: 'London', value: 'London' },
-      { text: 'New York', value: 'New York' }
-    ],
+    title: 'Seo',
+    className: 'w-24',
+    dataIndex: 'seo',
+    key: 'seo',
     ellipsis: true
   },
   {
@@ -84,40 +71,31 @@ const columns: TableColumnsType<DataType> = [
   }
 ];
 
-const ProductStatusTag: FC<IProductStatusTag> = ({ status }) => {
-  return <Tag color={status === 'published' ? 'blue' : 'red'}>{status}</Tag>;
+const ProductStatusTag: FC<{ status: IProduct['status'] }> = ({ status }) => {
+  return <Tag color={status === 1 ? 'blue' : 'red'}>{status === 0 ? 'unPublish' : 'Publish'}</Tag>;
 };
 const ProductAction: FC<IProductAction> = ({ status, productId }) => {
   const ButtonStatusProps: BaseButtonProps = {
     type: 'primary',
-    icon: status === 'unPublished' ? <GrCloudUpload /> : <MdDelete />,
-    danger: status === 'unPublished' ? false : true
+    icon: status === 0 ? <GrCloudUpload /> : <MdDelete />,
+    danger: status === 0 ? false : true
   };
-  const ButtonEditProps: BaseButtonProps = {
-    type: 'primary',
-    icon: status === 'unPublished' ? <IoMdSave /> : <MdDelete />
-  };
-
   const nav = useNavigate();
 
   return (
-    <div className='flex'>
+    <div className='flex flex-shrink-0 flex-wrap -mx-1 '>
       <Button
+        className='mx-2'
         icon={<BiExpand />}
         onClick={() => {
           nav('/products/product/' + productId);
         }}
       />
       <Button
+        className='mx-2'
         {...ButtonStatusProps}
         onClick={() => {
           console.log('===> PoweroffOutlined');
-        }}
-      />
-      <Button
-        {...ButtonEditProps}
-        onClick={() => {
-          console.log('===> FaRegEdit');
         }}
       />
     </div>
@@ -127,16 +105,25 @@ const ProductAction: FC<IProductAction> = ({ status, productId }) => {
 const ProductTable: FC<{
   products: IProuductsMetaData[];
 }> = ({ products }) => {
-  console.log('ProductTable::: render');
+  const nav = useNavigate();
   const dataProduct: DataType[] = products.map((p) => ({
     key: p._id,
     name: p.name,
     status: <ProductStatusTag status={p.status} />,
-    sale: '-145',
-    price: String(p.price) + ' VND',
-    typeSale: p.typeSale,
-    createdAt: p.createdAt,
-    action: <ProductAction productId={p._id} status='unPublished' />
+    sale: <Tag color='green'>{'150%'}</Tag>,
+    price: formatMoney(String(p.price)) + ' VND',
+    seo:
+      p.metaSeoProduct === null ? (
+        <Button
+          onClick={() => {
+            nav(`/products/seo-product/${p._id}`);
+          }}
+          icon={<FaRegEdit />}
+        ></Button>
+      ) : (
+        <Button icon={<MdCreditScore />}></Button>
+      ),
+    action: <ProductAction productId={p._id} status={p.status} />
   }));
 
   return <Table className='' {...tableProps} columns={columns} pagination={false} dataSource={dataProduct} />;

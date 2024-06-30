@@ -1,205 +1,317 @@
-import { Button, Col, Form, Input, Modal, Radio, RadioChangeEvent, Row, Spin, Upload, UploadFile } from 'antd';
-import React, { ChangeEvent, FocusEvent, useEffect, useState } from 'react';
+import { message, Spin } from 'antd';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { getProduct, selectProduct, selectStatusGetProduct } from '../../../Features/productDetailPage';
+import {
+  getProduct,
+  selectProduct,
+  selectStatusGetProduct,
+  selectStatusUpdateProduct,
+  updateProduct,
+  updateUploadFromSocket
+} from '../../../Features/productDetailPage';
 import { useAppDispatch, useAppSelector } from '../../../app/hook';
-import { GrPowerReset } from 'react-icons/gr';
-import { IProuductsMetaData } from '../../../Models/response';
-import UploadImageProductDetail from './UploadImageProductDetail';
-import FormUploadProductImage, { ButtonUpload } from '../ProductCreate/FormUploadProductImage';
-import FormEditOption, { IFormEditOption } from './FormEditOption';
 import { useForm } from 'antd/es/form/Form';
-import { genSlug } from '../../../utils/common';
+import { IProduct } from '../../../Models/product';
+import FormInforMainProduct from './FormInforMainProduct';
+import { recurtiveCat } from '../../../utils/common';
+import { getCategories, selectCategories } from '../../../Features/categoryPageSlice';
+import { PayloadUpdateProduct } from '../../../Models/request';
+import ProductOptionTest from '../Product/ProductOptionTest';
+import { RcFile, UploadFile } from 'antd/es/upload';
 import {
   FileType,
   getBase64,
-  IInformationProductColor,
   initialFormProductColor,
-  IProductColorData,
+  IOptionProductData,
   ITypeActionModalOption
 } from '../ProductCreate/ProductCreate';
-import ModelFormOptionProduct from '../../../Components/ModelFormOptionProduct';
-import { RcFile } from 'antd/es/upload';
-import EditorDescription from '../ProductCreate/EditorDescription';
+import { AppContext, IAppContext } from '../../../App';
+import { uploadProductImage } from '../../../Features/createProductPageSlice';
 import { uid } from 'uid';
-import { MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md';
-
-interface IStateProduct {
-  name: string;
-  slug: string;
-  price: string;
-  status: '0' | '1' | '';
-}
+import { IPromptUploadOptionSocket } from '../../../Models/promptSocket';
+import { TbChevronsRight } from 'react-icons/tb';
 
 export interface IActionProduct {
   type: 'product' | 'upload-product-option' | 'sizeAmounts-product-option';
   action: 'edit' | 'delete';
 }
 
-interface IFormInforPartProduct {
-  name: string;
-  slug: string;
-  price: string;
-  status: '0' | '1';
-  detail: string;
-  addOptionData: IProductColorData[];
+export interface IFormDataEditProduct {
+  id: IProduct['_id'];
+  name: IProduct['name'];
+  price: IProduct['price'];
+  categoryId: IProduct['categoryId'];
+  status: string;
+  slug: IProduct['slug'];
+  detail: IProduct['detail'];
 }
-const ProductDetail = () => {
-  const prams = useParams();
-  const statusGetProduct = useAppSelector(selectStatusGetProduct);
-  const product = useAppSelector(selectProduct);
-  const [productShadow, setProductShadow] = useState<IProuductsMetaData | null>(null);
-  const dispatch = useAppDispatch();
-  const initialFieldProduct = (product?: IProuductsMetaData): IStateProduct => {
-    return {
-      name: product === null || product === undefined ? '' : product.name,
-      slug: product === null || product === undefined ? '' : product.slug,
-      price:
-        product === null || product === undefined ? '' : product.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'),
-      status: product === null || product === undefined ? '' : product.status === 'published' ? '1' : '0'
-    };
-  };
-  // const [formProduct, setFormProduct] = useState<IStateProduct>(initialFieldProduct());
 
-  const [formInforPartProduct] = useForm<IFormInforPartProduct>();
-  const [formProducColor] = useForm<IInformationProductColor>();
+const ProductDetail = () => {
+  const params = useParams();
+  const product = useAppSelector(selectProduct);
+  const dispatch = useAppDispatch();
+  const statusGetProduct = useAppSelector(selectStatusGetProduct);
+  const statusUpdateProduct = useAppSelector(selectStatusUpdateProduct);
+  const [initiaProduct, setInitialProduct] = useState<IFormDataEditProduct | null>(null);
+  const [additionProductOptions, setAdditionProductOptions] = useState<IOptionProductData[]>([]);
+  const [isOpenAddtionProduductOptionModal, setisOpenAddtionProduductOptionModal] = useState<boolean>(false);
+  const categories = useAppSelector(selectCategories);
+  const [formInforMain] = useForm<IFormDataEditProduct>();
+  const [producOptionForm] = useForm<IOptionProductData>();
+  const appContext = useContext<IAppContext | null>(AppContext);
+  const [typeModalOption, setTypeModalOption] = useState<ITypeActionModalOption>({ type: 'add' });
+  const [messageApi, contextHolder] = message.useMessage();
+
   useEffect(() => {
-    if (statusGetProduct === 'fulfilled' && product) {
-      formInforPartProduct.setFieldsValue({
-        name: product.name,
-        slug: product.slug,
-        price: product.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'),
-        status: product.status === 'published' ? '1' : '0',
-        detail: product.detail ?? '',
-        addOptionData: []
-      });
-      formProducColor.setFieldsValue(initialFormProductColor);
+    if (categories.length === 0) {
+      dispatch(getCategories());
     }
-  }, [statusGetProduct]);
+    producOptionForm.setFieldsValue(initialFormProductColor);
+  }, []);
   useEffect(() => {
-    dispatch(getProduct(prams.id ?? ''))
+    if (appContext) {
+      appContext.socketProduct.on('uploadOption', (data: IPromptUploadOptionSocket) => {
+        if (params.id === data.productId) {
+          dispatch(updateUploadFromSocket(data));
+        }
+      });
+    }
+  }, []);
+  useEffect(() => {
+    fecthDataProduct();
+  }, [params.id]);
+  const categoriesOptions = [{ label: 'None', value: '' }, ...recurtiveCat([], categories)];
+
+  const fecthDataProduct = () => {
+    dispatch(getProduct(params.id ?? ''))
       .unwrap()
       .then((data) => {
         const product = data.metadata;
         if (product) {
-          // setFormProduct(initialFieldProduct(product));
-          setProductShadow(product);
+          const initialValue = {
+            id: product._id,
+            name: product.name,
+            price: product.price,
+            categoryId: product.categoryId,
+            status: String(product.status),
+            detail: product.detail,
+            slug: product.slug
+          };
+          setInitialProduct(initialValue);
+          formInforMain.setFieldsValue(initialValue);
         }
-      })
-      .catch((err) => {
-        console.log('....');
       });
-  }, [prams.id]);
-  useEffect(() => {
-    if (statusGetProduct === 'fulfilled') {
-      setProductShadow(product);
-    }
-  }, [statusGetProduct]);
-
-  const handleOnchangePrice = (e: ChangeEvent<HTMLInputElement>) => {
-    const vl = e.target.value;
-    const vlMoney = vl
-      .replace(/\./g, '')
-      .toString()
-      .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    formInforPartProduct.setFieldValue('price', vlMoney);
   };
-  const handleOnBlurPrice = (e: FocusEvent<HTMLInputElement>) => {
-    const vl = e.currentTarget.value;
-    if (vl === '') {
-      formInforPartProduct.setFieldValue('price', 0);
-    } else {
-      const removeDotVl = vl.replace(/\./g, '');
-      const covertNumber = Number(removeDotVl);
-      if (!(covertNumber > 0 && covertNumber !== Infinity)) {
-        formInforPartProduct.setFieldValue('price', 0);
+
+  const handleOnChangeNameProduct = () => {};
+  const handleOnChangePrice = () => {};
+  const handleOnBlurPrice = () => {};
+  const handleResetForm = () => {
+    if (initiaProduct) {
+      formInforMain.setFieldsValue(initiaProduct);
+    }
+  };
+  const getDataChangeInforMainProduct = (
+    init: IFormDataEditProduct | null,
+    present: IFormDataEditProduct
+  ): PayloadUpdateProduct | null => {
+    if (init !== null) {
+      const dataChange: PayloadUpdateProduct = {
+        id: init.id
+      };
+      if (init.name !== present.name) {
+        dataChange.name = present.name;
+      }
+      if (init.categoryId !== present.categoryId) {
+        dataChange.categoryId = present.categoryId;
+      }
+      if (init.price !== present.price) {
+        dataChange.price = String(present.price);
+      }
+      if (init.slug !== present.slug) {
+        dataChange.slug = present.slug;
+      }
+      if (init.status !== present.status) {
+        dataChange.status = present.status as PayloadUpdateProduct['status'];
+      }
+      if (present.detail && init.detail !== present.detail) {
+        dataChange.detail = present.detail;
+      }
+      return Object.keys(dataChange).length > 1 ? dataChange : null;
+    }
+    return null;
+  };
+
+  const handleSubmitMainInforProduct = () => {
+    const dataChangeInforMainProduct = getDataChangeInforMainProduct(initiaProduct, formInforMain.getFieldsValue());
+    if (dataChangeInforMainProduct) {
+      dispatch(updateProduct(dataChangeInforMainProduct))
+        .unwrap()
+        .then(() => {
+          fecthDataProduct();
+        });
+    }
+  };
+  const handleAddOptionButton = () => {
+    setisOpenAddtionProduductOptionModal(true);
+    setTypeModalOption({
+      type: 'add'
+    });
+  };
+  const handleActionUploadProductAvailable = () => {};
+  const handleActionAddUpload = (file: RcFile, id: string) => {
+    return new Promise<string>(() => {
+      const options: IOptionProductData[] = [...additionProductOptions];
+      const indexProductImage = options.findIndex((vl) => vl.id === id);
+      if (indexProductImage >= 0) {
+        options[indexProductImage].productImages = [
+          ...options[indexProductImage].productImages,
+          {
+            ...file,
+            originFileObj: file,
+            type: file.type,
+            status: 'uploading',
+            order: options[indexProductImage].productImages.length
+          }
+        ].slice(0, 6) as IOptionProductData['productImages'];
+        setAdditionProductOptions(options);
+      }
+
+      getBase64(file as FileType).then((url) => {
+        const options: IOptionProductData[] = [...additionProductOptions];
+        const indexProductImage = options.findIndex((vl) => vl.id === id);
+        if (indexProductImage >= 0) {
+          for (const upload of options[indexProductImage].productImages) {
+            if (upload.uid === file.uid) {
+              upload.originFileObj = file;
+              upload.type = file.type;
+              upload.url = url;
+              upload.status = 'done';
+              break;
+            }
+          }
+          setAdditionProductOptions(options);
+        }
+      });
+    });
+  };
+  const handleDeleteOption = (id: string) => {
+    const data: IOptionProductData[] = additionProductOptions;
+    const dataAfterRemove = data.filter((vl) => vl.id !== id);
+    setAdditionProductOptions(dataAfterRemove);
+  };
+  const handleEditOption = (productColor: IOptionProductData, id: string) => {
+    producOptionForm.setFieldsValue(productColor);
+    setisOpenAddtionProduductOptionModal((state) => !state);
+    setTypeModalOption({
+      type: 'edit',
+      optionId: id
+    });
+  };
+  const handleRemoveMedia = (file: UploadFile<any>, id: string) => {
+    const fileId = file.uid;
+    const data: IOptionProductData[] = additionProductOptions;
+    const optionsShadow = [...data];
+    for (const optionShadow of optionsShadow) {
+      if (optionShadow.id === id) {
+        const dataNew = optionShadow.productImages.filter((file) => file.uid !== fileId);
+        optionShadow.productImages = dataNew;
+        break;
       }
     }
+    setAdditionProductOptions(optionsShadow);
   };
-  const handleOnchangeNameProduct = (e: ChangeEvent<HTMLInputElement>) => {
-    formInforPartProduct.setFieldValue('slug', genSlug(e.target.value));
+  const handleSaveAdditionOption = () => {
+    if (params.id) {
+      const payloadThunk = { productId: params.id, optionProductData: additionProductOptions };
+      dispatch(uploadProductImage(payloadThunk))
+        .unwrap()
+        .then((data) => {
+          messageApi.success('Adding product successfully');
+          setAdditionProductOptions([]);
+          fecthDataProduct();
+        })
+        .catch(() => {
+          messageApi.error('Adding product failed');
+        });
+    }
   };
-
+  const handleCancelEdittingOptionModal = () => {
+    setisOpenAddtionProduductOptionModal(false);
+  };
+  const handleOkEdittingOptionModal = () => {
+    const color = producOptionForm.getFieldValue('colorCode');
+    if (typeof color !== 'string') {
+      producOptionForm.setFieldValue('colorCode', color.toHexString());
+    }
+    producOptionForm.submit();
+  };
+  const handleOpenChangeCompleteColorPickup = () => {};
+  const handleOnSubmitFormAddOptionModal = (values: IOptionProductData) => {
+    if (typeModalOption.type === 'add') {
+      const presLengthOption = (product?.productColors ?? []).length + 1;
+      setAdditionProductOptions((state) => {
+        return [...state, { ...values, id: uid(24), productImages: [], order: presLengthOption }];
+      });
+      producOptionForm.setFieldsValue(initialFormProductColor);
+      setisOpenAddtionProduductOptionModal(false);
+    } else if (typeModalOption.type === 'edit') {
+      const optionId = typeModalOption.optionId;
+      if (optionId) {
+        const options: IOptionProductData[] = additionProductOptions;
+        const shadowOptions = [...options];
+        const indexEdit = shadowOptions.findIndex((option) => option.id === typeModalOption.optionId);
+        if (indexEdit >= 0) {
+          shadowOptions[indexEdit] = { ...shadowOptions[indexEdit], ...values };
+          setAdditionProductOptions(shadowOptions);
+        }
+      }
+      setisOpenAddtionProduductOptionModal(false);
+      producOptionForm.setFieldsValue(initialFormProductColor);
+    }
+  };
+  const actionReUpload = (file: RcFile, optionId: string, productImageId: string) => {
+    return new Promise<string>(() => {});
+  };
+  const handleSortOptionImage = (optionId: string, productImageId: string, value: string) => {};
+  const handleRemoveOptionImage = (optionId: string, productImageId: string) => {};
+  const handleSortOption = (optionId: string, value: string) => {};
+  console.log('render:::: Product Detail');
   return (
     <div>
       {
         <Spin
           style={{ zIndex: 200000 }}
-          spinning={product === null && statusGetProduct === 'pending'}
+          spinning={statusGetProduct === 'pending' || statusUpdateProduct === 'pending'}
           fullscreen
           tip='Updating'
           size='large'
         />
       }
-      <h2 className='text-center'>Product Detail</h2>
-      <Form form={formInforPartProduct} layout='vertical' className='p-6'>
-        <Row gutter={[20, 0]}>
-          <Col sm={24} md={12} xl={7}>
-            <Form.Item name='name' label='Name'>
-              <Input onChange={handleOnchangeNameProduct} name='name'></Input>
-            </Form.Item>
-          </Col>
-          <Col sm={24} md={12} xl={7}>
-            <Form.Item name='slug' label='Slug'>
-              <Input></Input>
-            </Form.Item>
-          </Col>
-          <Col sm={24} md={12} xl={5}>
-            <Form.Item name={'price'} label='Price'>
-              <Input onChange={handleOnchangePrice} onBlur={handleOnBlurPrice}></Input>
-            </Form.Item>
-          </Col>
-          <Col sm={24} md={12} xl={5}>
-            <Form.Item name='status' label='Status' tooltip={{ title: 'Tooltip with customize icon' }}>
-              <Radio.Group>
-                <Radio value={'1'}>Active</Radio>
-                <Radio value={'0'}>UnActive</Radio>
-              </Radio.Group>
-            </Form.Item>
-          </Col>
-          <Col sm={24} md={24}>
-            <Form.Item name='detail' label='Description'>
-              <EditorDescription
-                dataDescription={formInforPartProduct.getFieldValue('detail')}
-                setDataDesciption={(vl: string) => {
-                  formInforPartProduct.setFieldValue('detail', vl);
-                }}
-              />
-            </Form.Item>
-          </Col>
-          <Col xs={24}>
-            <div className='flex justify-center'>
-              <Button
-                disabled={statusGetProduct === 'pending'}
-                type='primary'
-                style={{ marginRight: '30px' }}
-                //   onClick={handleUpdateCategory}
-              >
-                Save
-              </Button>
-              <Button
-                disabled={statusGetProduct === 'pending'}
-                danger
-                onClick={() => {
-                  if (product) {
-                    // setFormProduct(initialFieldProduct(product));
-                  }
-                }}
-                icon={<GrPowerReset />}
-                type='text'
-              ></Button>
-            </div>
-          </Col>
-          <Col>
-            <Link to={`/products/product/option/${prams.id}`} className='flex items-center'>
-              <span className='mr-2 text-lg font-medium'>Option</span>{' '}
-              <span className='text-xl'>
-                <MdOutlineKeyboardDoubleArrowRight />
-              </span>
-            </Link>
-          </Col>
-        </Row>
-      </Form>
+      {contextHolder}
+      <h2 className='text-center text-2xl'>Product Detail</h2>
+      <Link
+        to={'/products/product-option/' + params.id}
+        className='text-center ml-6 font-normal leading-none hover:opacity-75 hover:cursor-pointer hover:font-medium flex items-center'
+      >
+        Option product
+        <span className='flex justify-center items-center ml-2 text-base'>
+          <TbChevronsRight />
+        </span>
+      </Link>
+
+      <FormInforMainProduct
+        isActiveSubmit={true}
+        categories={categoriesOptions}
+        formInforMain={formInforMain}
+        statusGetProduct={statusGetProduct}
+        statusGetCategories={statusGetProduct}
+        onChangeNameProduct={handleOnChangeNameProduct}
+        onChangePrice={handleOnChangePrice}
+        onBlurPrice={handleOnBlurPrice}
+        onResetForm={handleResetForm}
+        onSubmitForm={handleSubmitMainInforProduct}
+      />
     </div>
   );
 };

@@ -15,6 +15,7 @@ interface ITiltleCategory {
   openToolKey: string;
   id: string;
   handleClickTool: () => void;
+  onDeleteCategory: (id: string) => void;
 }
 
 const TiltleCategory: React.FC<ITiltleCategory> = ({
@@ -23,7 +24,8 @@ const TiltleCategory: React.FC<ITiltleCategory> = ({
   setDetailCategory,
   id,
   openToolKey,
-  handleClickTool
+  handleClickTool,
+  onDeleteCategory
 }) => {
   const nav = useNavigate();
   return (
@@ -64,7 +66,7 @@ const TiltleCategory: React.FC<ITiltleCategory> = ({
             />
             <Button
               onClick={(e) => {
-                handleClickTool();
+                onDeleteCategory(id);
               }}
               danger
               type='primary'

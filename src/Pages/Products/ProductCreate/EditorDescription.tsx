@@ -17,7 +17,7 @@ interface IEditorDescription {
 }
 const EditorDescription: FC<IEditorDescription> = ({ setDataDesciption, dataDescription }) => {
   return (
-    <div className='mb-0'>
+    <div className='mb-0 rounded-md'>
       <CKEditor
         editor={ClassicEditor}
         data={dataDescription}

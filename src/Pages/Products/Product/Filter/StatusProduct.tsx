@@ -31,11 +31,14 @@ const StatusProduct: FC<IStatusProduct> = ({
             return (
               <div className=' bg-white rounded py-2 outline-slate-400 outline-double'>
                 <Space className='inline-block px-2'>
-                  <Checkbox value={'0'} onChange={handleOnchangeStatus} checked={filterStatusPseudo.includes('0')}>
-                    unPublished
+                  <Checkbox value={'all'} onChange={handleOnchangeStatus} checked={filterStatusPseudo.includes('1')}>
+                    all
                   </Checkbox>
                   <Checkbox value={'1'} onChange={handleOnchangeStatus} checked={filterStatusPseudo.includes('1')}>
                     published
+                  </Checkbox>
+                  <Checkbox value={'0'} onChange={handleOnchangeStatus} checked={filterStatusPseudo.includes('0')}>
+                    unPublished
                   </Checkbox>
                 </Space>
                 <Divider style={{ margin: '10px 0' }}></Divider>

@@ -27,7 +27,18 @@ export const recurtiveCat = (
   return result;
 };
 
-export const formatMoney = (num: number): string => {
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+export const formatMoney = (value: number | string): string => {
+  if (typeof value === 'number') {
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+  return value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+};
+
+export const parseJsonData = (data: string) => {
+  try {
+    return JSON.parse(data);
+  } catch (error) {
+    return null;
+  }
 };
 export { genSlug };

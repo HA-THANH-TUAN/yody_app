@@ -13,7 +13,7 @@ export interface ICommonResponse {
 export interface ICategoryResponse extends ICategory {
   categories?: ICategory[];
 }
-export interface IMetaDataResponseCategoryForId {
+export interface IMetaDataResponseCategory {
   categories: ICategoryResponse[];
   breadCrum: {
     _id: string;
@@ -46,4 +46,8 @@ export interface IMetaDataResponseCreateProduct {
   detail: null | string;
   productColorId: null | string;
   createdAt: string;
+}
+
+export interface IMetaDataResponseGetSeoProduct extends IProduct {
+  productColors: IProductColor[];
 }

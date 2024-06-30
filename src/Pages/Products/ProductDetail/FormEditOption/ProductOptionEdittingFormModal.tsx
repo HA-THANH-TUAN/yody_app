@@ -4,43 +4,44 @@ import React, { FC, useState } from 'react';
 import { MdDeleteForever } from 'react-icons/md';
 import { RxDotsVertical } from 'react-icons/rx';
 import { uid } from 'uid';
-import { IInformationProductColor, IProductColorData } from '../Pages/Products/ProductCreate/ProductCreate';
+import { IOptionProductData } from '../../ProductCreate/ProductCreate';
 import { PlusOutlined } from '@ant-design/icons';
 import { Color } from 'antd/es/color-picker';
 
-interface IModelFormOptionProduct {
+interface IProductOptionEdittingFormModal {
   isModalOpen: boolean;
-  formProducColor: FormInstance<IInformationProductColor>;
-  handleOnSubmitForm: (values: IInformationProductColor) => void;
-  handleOnOkModalOption: () => void;
-  handleOnCancelModalOption: () => void;
-  handleOpenChangeCompleteColorPickup: (vl: Color) => void;
+  producOptionForm: FormInstance<IOptionProductData>;
+  handleSubmitForm: (values: IOptionProductData) => void;
+  handleOkModal: () => void;
+  handleCancelOptionModal: () => void;
+  handleSortOption: (optionId: string, value: string) => void;
+  handleChangeCompleteColorPickup: (vl: Color) => void;
 }
 
-const ModelFormOptionProduct: FC<IModelFormOptionProduct> = ({
+const ProductOptionEdittingFormModal: FC<IProductOptionEdittingFormModal> = ({
   isModalOpen,
-  formProducColor,
-  handleOnSubmitForm,
-  handleOnOkModalOption,
-  handleOnCancelModalOption,
-  handleOpenChangeCompleteColorPickup
+  producOptionForm,
+  handleSubmitForm,
+  handleOkModal,
+  handleCancelOptionModal,
+  handleChangeCompleteColorPickup
 }) => {
   const [isOpenPickColor, setIsOpenPickColor] = useState<boolean>(false);
   return (
     <>
       {isOpenPickColor && <div className='absolute z-[1001] left-0 bottom-0 top-0 right-0'></div>}
       <Modal
-        title='Informattion Product Color'
+        title='Information Product Option'
         open={isModalOpen}
-        onOk={handleOnOkModalOption}
+        onOk={handleOkModal}
         width={400}
-        onCancel={handleOnCancelModalOption}
+        onCancel={handleCancelOptionModal}
       >
-        <Form onFinish={handleOnSubmitForm} form={formProducColor} style={{ marginTop: '30px' }}>
+        <Form onFinish={handleSubmitForm} form={producOptionForm} style={{ marginTop: '30px' }}>
           <Form.Item name='id' hidden>
             <Input />
           </Form.Item>
-          <Form.Item name='name' label='Color name'>
+          <Form.Item name='colorName' label='Color name'>
             <Input />
           </Form.Item>
           <Form.List name='sizeAmounts'>
@@ -55,6 +56,17 @@ const ModelFormOptionProduct: FC<IModelFormOptionProduct> = ({
                             <FormItem name={[props.name, 'id']} hidden>
                               <Input />
                             </FormItem>
+                            <FormItem name={[props.name, 'order']}>
+                              <InputNumber
+                                onBlur={() => {
+                                  const options = (
+                                    producOptionForm.getFieldValue('sizeAmounts') as IOptionProductData['sizeAmounts']
+                                  ).sort((a, b) => a.order - b.order);
+                                  producOptionForm.setFieldValue('sizeAmounts', options);
+                                }}
+                                className='w-14'
+                              ></InputNumber>
+                            </FormItem>
                             <FormItem
                               rules={[
                                 {
@@ -62,8 +74,8 @@ const ModelFormOptionProduct: FC<IModelFormOptionProduct> = ({
                                     if (value.length === 0) {
                                       return Promise.reject('This is a required field');
                                     }
-                                    const data: IProductColorData['sizeAmounts'] =
-                                      formProducColor.getFieldValue('sizeAmounts');
+                                    const data: IOptionProductData['sizeAmounts'] =
+                                      producOptionForm.getFieldValue('sizeAmounts');
 
                                     const checkConfict = data.some(
                                       ({ size }, indexCheck) => index !== indexCheck && size === value
@@ -91,7 +103,20 @@ const ModelFormOptionProduct: FC<IModelFormOptionProduct> = ({
                                   type='primary'
                                   className='mx-1'
                                   onClick={() => {
-                                    add({ id: uid(24), size: 'M', amount: 0 });
+                                    const sizeAmountsData: IOptionProductData['sizeAmounts'] =
+                                      producOptionForm.getFieldValue('sizeAmounts');
+                                    const dataBeforeAndEqualIndex = sizeAmountsData.filter((item, i) => i <= index);
+                                    const dataAffterIndex = sizeAmountsData
+                                      .filter((_, i) => i > index)
+                                      .map((sizeAmount) => {
+                                        sizeAmount.order++;
+                                        return sizeAmount;
+                                      });
+                                    producOptionForm.setFieldValue('sizeAmounts', [
+                                      ...dataBeforeAndEqualIndex,
+                                      { id: uid(24), size: 'M', order: index + 1, amount: 0 },
+                                      ...dataAffterIndex
+                                    ]);
                                   }}
                                   size='small'
                                 >
@@ -101,9 +126,16 @@ const ModelFormOptionProduct: FC<IModelFormOptionProduct> = ({
                                   className='mx-1'
                                   danger
                                   onClick={() => {
-                                    const dataOption = formProducColor.getFieldValue('sizeAmounts');
+                                    const dataOption: IOptionProductData['sizeAmounts'] =
+                                      producOptionForm.getFieldValue('sizeAmounts');
                                     if (dataOption?.length > 1) {
-                                      remove(props.name);
+                                      const dataSizeAmounts = dataOption
+                                        .filter((item, i) => i !== index)
+                                        .map((item, i) => {
+                                          item.order = i;
+                                          return item;
+                                        });
+                                      producOptionForm.setFieldValue('sizeAmounts', dataSizeAmounts);
                                     }
                                   }}
                                   size='small'
@@ -128,17 +160,20 @@ const ModelFormOptionProduct: FC<IModelFormOptionProduct> = ({
               );
             }}
           </Form.List>
-          <Form.Item label='Color' name={'codeColor'}>
+          <Form.Item label='Color' name={'colorCode'}>
             <ColorPicker
               open={isOpenPickColor}
               onOpenChange={() => {
                 setIsOpenPickColor((state) => !state);
               }}
-              onChangeComplete={handleOpenChangeCompleteColorPickup}
-              value={formProducColor.getFieldValue('codeColor')}
+              onChangeComplete={handleChangeCompleteColorPickup}
+              value={producOptionForm.getFieldValue('colorCode')}
               format='hex'
               showText
             />
+          </Form.Item>
+          <Form.Item label='Order' name={'order'}>
+            <InputNumber />
           </Form.Item>
         </Form>
       </Modal>
@@ -146,4 +181,4 @@ const ModelFormOptionProduct: FC<IModelFormOptionProduct> = ({
   );
 };
 
-export default ModelFormOptionProduct;
+export default ProductOptionEdittingFormModal;

@@ -146,3 +146,7 @@ header .item-nav:hover .list-item-nav {
   width: 100%;
   height: 100%;
 }
+
+:where(.css-dev-only-do-not-override-djtmh8).ant-tree.ant-tree-directory .ant-tree-treenode-selected::before {
+  background-color: black !important;
+}

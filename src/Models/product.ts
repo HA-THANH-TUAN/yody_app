@@ -1,10 +1,13 @@
 export interface IMediaUrlsProductColor {
   _id: string;
   url: string;
+  order: number;
   status: 'success' | 'pending' | 'reject';
   type: 'image' | 'video';
+  publicKey: string;
 }
 export interface ISizeAmounts {
+  order: number;
   amount: number;
   size: string;
   _id: string;
@@ -16,6 +19,15 @@ export interface IProductColor {
   colorCode: string;
   sizeAmounts: ISizeAmounts[];
   mediaUrls: IMediaUrlsProductColor[];
+  order: number;
+}
+
+export interface IMetaSeoProduct {
+  _id: string;
+  url: string;
+  keywords: string;
+  description: string;
+  urlImage: string;
 }
 export interface IProduct {
   _id: string;
@@ -23,9 +35,10 @@ export interface IProduct {
   typeSale: 'none' | 'hard' | 'percent';
   price: number;
   categoryId: string;
-  status: 'published' | 'unPublished';
+  status: 1 | 0;
   slug: string;
   detail: null | string;
   productColorId: string;
   createdAt: string;
+  metaSeoProduct: null | IMetaSeoProduct;
 }

@@ -63,7 +63,6 @@ const SelectCategory: FC<ISelectCategory> = ({
   setToggleSelectFilter,
   setCategoryIds
 }) => {
-  console.log('SelectCategory:::render');
   return (
     <div>
       <Space style={{ width: '100%' }} direction='vertical'>

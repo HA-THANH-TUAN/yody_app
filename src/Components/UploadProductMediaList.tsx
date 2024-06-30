@@ -6,10 +6,11 @@ import { FaCloudUploadAlt, FaRegEdit } from 'react-icons/fa';
 import { MdDeleteForever } from 'react-icons/md';
 import { IFormCreateProduct } from '../../../Components/FormCreateProduct';
 import { IOptionProductData } from './ProductCreate';
+import { IFormCreateProductData } from '../Pages/Products/ProductCreate/ProductCreate';
 
 export interface IFormUploadProductImage {
   productColor: IOptionProductData;
-  onEditOption: IFormCreateProduct['onEditOption'];
+  onEditOption: IFormCreateProductData['onEditOption'];
   onDeleteOption: IFormCreateProduct['onDeleteOption'];
   onSortOptionImage: IFormCreateProduct['onSortOptionImage'];
   onSortOption: IFormCreateProduct['onSortOption'];
@@ -37,7 +38,7 @@ export const ButtonUpload = () => {
     </button>
   );
 };
-const FormUploadProductImage: FC<IFormUploadProductImage> = ({
+const UploadProductMediaList: FC<IFormUploadProductImage> = ({
   productColor,
   propCols = { sm: { span: 8 } },
   onRemoveMedia,
@@ -222,4 +223,4 @@ const FormUploadProductImage: FC<IFormUploadProductImage> = ({
   );
 };
 
-export default FormUploadProductImage;
+export default UploadProductMediaList;

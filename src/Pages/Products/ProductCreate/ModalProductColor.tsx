@@ -3,7 +3,6 @@ import {
   ColorPicker,
   ColorPickerProps,
   Form,
-  FormProps,
   Input,
   InputNumber,
   Modal,

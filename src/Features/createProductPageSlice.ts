@@ -3,6 +3,7 @@ import ProductApi from '../apis/products';
 import { PayloadCreateProduct, PayloadUploadProduct } from '../Models/request';
 import { RootState } from '../app/store';
 import { ICommonResponse } from '../Models/response';
+import { IOptionProductData } from '../Pages/Products/ProductCreate/ProductCreate';
 
 export interface IPayloadCreateProductThunk extends PayloadCreateProduct {
   uploads: FormData[];
@@ -24,21 +25,44 @@ export const createProduct = createAsyncThunk(
     console.log('===>', _id);
     for (const upload of uploads) {
       upload.append('productId', _id);
-      thunkAPI.dispatch(uploadProductImage(upload));
+      // thunkAPI.dispatch(uploadProductImage(upload));
     }
     return data;
   }
 );
+
+interface PayloadUploadProductImageThunk {
+  productId: string;
+  optionProductData: IOptionProductData[];
+}
 export const uploadProductImage = createAsyncThunk(
   'products/uploadProduct',
-  async (payload: FormData, { rejectWithValue }) => {
-    const data = await ProductApi.uploadProduct(payload);
-    if (data.status > 300) {
-      throw rejectWithValue(data);
+  async (payload: PayloadUploadProductImageThunk, { rejectWithValue }) => {
+    const uploadPromises = payload.optionProductData.map((option) => {
+      const instanceFormData = new FormData();
+      instanceFormData.append('color', option.colorName.trim());
+      instanceFormData.append('productId', payload.productId);
+      instanceFormData.append('colorCode', option.colorCode);
+      instanceFormData.append('sizeAmounts', JSON.stringify(option.sizeAmounts));
+      option.productImages.forEach((productImage) => {
+        instanceFormData.append('files', productImage.originFileObj as File);
+        instanceFormData.append('orderFiles', String(isNaN(Number(productImage.order)) ? 0 : productImage.order));
+      });
+      return ProductApi.uploadProduct(instanceFormData);
+    });
+    const result = await Promise.all(uploadPromises);
+    const isSuccess = !result.some((item) => item.status >= 400);
+    if (isSuccess) {
+      return {
+        status: 200,
+        message: 'OK'
+      };
+    } else {
+      rejectWithValue({
+        status: 401,
+        message: 'Error'
+      });
     }
-    console.log('===>data:::', data);
-
-    return data;
   }
 );
 
