@@ -1,24 +1,19 @@
-import { AxiosResponse } from 'axios';
 import axiosInstance from './axiosConfig';
-import { ICategoryResponse, ICommonResponse, IMetaDataResponseCategory, IResponse } from '../Models/response';
-import { PayloadCreateCategory, PayloadUpdateCategory } from '../Models/request';
+import { CategoryCreationPayload, CategoryUpdatingPayload } from '../Models/request';
+import { ICommonResponse, IGetCategoriesResponse, IGetCategoryResponse } from '../Models/response';
 
 class CategoryApi {
+  static createCategory(data: CategoryCreationPayload) {
+    return axiosInstance.post<any, ICommonResponse>('/create-category', data);
+  }
   static getCategories() {
-    return axiosInstance.get<any, IResponse<ICategoryResponse[]>>('/admin/categories');
+    return axiosInstance.get<any, IGetCategoriesResponse>('/get-categories');
   }
-  static createCategory(data: PayloadCreateCategory) {
-    return axiosInstance.post<any, ICommonResponse>('/admin/category', data);
+  static getCategory(id: string) {
+    return axiosInstance.get<any, IGetCategoryResponse>('/get-category/' + id);
   }
-  static getCategoryForId(id: string) {
-    return axiosInstance.get<any, IResponse<IMetaDataResponseCategory>>('/admin/category/' + id);
-  }
-  static updateCategory(payload: PayloadUpdateCategory) {
-    return axiosInstance.patch<any, IResponse<IMetaDataResponseCategory>>('/admin/category/', payload);
-  }
-  static deleteCategory(id: string) {
-    return axiosInstance.delete<any, ICommonResponse>('/admin/category/' + id);
+  static updateCategory(data: CategoryUpdatingPayload) {
+    return axiosInstance.patch<any, ICommonResponse>('/update-category', data);
   }
 }
-
 export default CategoryApi;

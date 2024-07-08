@@ -11,7 +11,8 @@ import { Button, Menu, theme } from 'antd';
 import Layout from 'antd/es/layout/layout';
 import { useAppSelector } from '../app/hook';
 import { selectCollapsedSiderBar, selectScreenWidth } from '../Features/setting';
-import logo from '../Assets/images/logo_y.png';
+import logoMini from '../Assets/images/logo-mini.png';
+import logo from '../Assets/images/yody-logo.svg';
 import { MdDashboard } from 'react-icons/md';
 import { GrProductHunt } from 'react-icons/gr';
 import { CgWebsite } from 'react-icons/cg';
@@ -59,13 +60,17 @@ const SiderBarPage: React.FC = () => {
   const {
     token: { colorBgContainer }
   } = theme.useToken();
+  console.log('colorBgContainer::: ', colorBgContainer);
   return (
-    <div className={`hidden-scrollbar bg-[${colorBgContainer}] overflow-y-auto border-r`}>
-      <div className='flex h-16 items-center justify-center border-b'>
-        <span className='inline-block w-10 h-10 rounded-[50%] bg-blue-500 '>
-          <img className='w-full h-full block p-[10px] object-contain' src={logo} alt='' />
+    <div className={`hidden-scrollbar bg-[#001529] overflow-y-auto`}>
+      <div className='flex h-16 items-center justify-center border-r border-b border-l-0 border-t-0 border-white border-solid'>
+        <span className={`block`}>
+          {!collapsed && screenWidth > 768 ? (
+            <img className='h-full block object-contain' src={logo} alt='' />
+          ) : (
+            <img className='max-h-8 max-w-10 object-contain block' src={logoMini} alt='logo-mini' />
+          )}
         </span>
-        {!collapsed && screenWidth > 768 && <span className='font-semibold text-xl ml-2'>ADMIN</span>}
       </div>
       <Menu
         style={{

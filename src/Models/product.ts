@@ -1,44 +1,48 @@
-export interface IMediaUrlsProductColor {
+type SizeName = 'S' | 'M' | 'L' | 'XL' | 'XXL' | 'XXXL' | '2-3' | '4-5' | '6-7' | '8-9';
+type GenderProduct = 'male' | 'female' | 'all';
+type StatusProduct = 'active' | 'unactive';
+type BreadCrumbCategory = string[];
+
+export interface IBaseProduct {
   _id: string;
-  url: string;
-  order: number;
-  status: 'success' | 'pending' | 'reject';
-  type: 'image' | 'video';
-  publicKey: string;
+  name: string;
+  slug: string;
+  originPrice: number;
+  status: StatusProduct;
+  categoryId: string;
+  description: null | string;
+  createdAt: string;
+  updatedAt: string;
+  gender: GenderProduct;
 }
-export interface ISizeAmounts {
-  order: number;
-  amount: number;
-  size: string;
+export interface IVariantProduct {
   _id: string;
-}
-export interface IProductColor {
-  _id: string;
+  variantProductCode: string;
+  colorName: string;
   productId: string;
-  color: string;
   colorCode: string;
-  sizeAmounts: ISizeAmounts[];
-  mediaUrls: IMediaUrlsProductColor[];
+  mediaUrls: IMediaUrl[];
+  sizeAmounts: ISizeAmount[];
+}
+export interface IMediaUrl {
+  _id: string;
+  variantProductId: string;
+  status: StatusProduct;
+  order: number;
+  url: string | null;
+  publicKey: string | null;
+  type: string | null;
+}
+
+export interface ISizeAmount {
+  _id: string;
+  variantProductId: string;
+  sizeName: SizeName;
+  amount: number;
   order: number;
 }
 
-export interface IMetaSeoProduct {
-  _id: string;
-  url: string;
-  keywords: string;
-  description: string;
-  urlImage: string;
-}
-export interface IProduct {
-  _id: string;
-  name: string;
-  typeSale: 'none' | 'hard' | 'percent';
-  price: number;
-  categoryId: string;
-  status: 1 | 0;
-  slug: string;
-  detail: null | string;
-  productColorId: string;
-  createdAt: string;
-  metaSeoProduct: null | IMetaSeoProduct;
+export interface IProduct extends IBaseProduct {
+  variants: IVariantProduct[];
+  breadCrumbCategory?: BreadCrumbCategory;
 }

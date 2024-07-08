@@ -1,0 +1,32 @@
+.category-structure-component-category-page .ant-tree-treenode {
+  width: 100%;
+}
+.category-structure-component-category-page .ant-tree-treenode .ant-tree-node-content-wrapper {
+  flex: 1;
+  padding-right: 0;
+}
+.category-structure-component-category-page
+  .ant-tree-treenode
+  .ant-tree-node-content-wrapper
+  .category-item-action-component-category-structure
+  button {
+  animation-name: move-button;
+  animation-duration: 0.5s;
+  animation-timing-function: ease-in-out;
+}
+.category-structure-component-category-page
+  .ant-tree-treenode
+  .ant-tree-node-content-wrapper
+  .category-item-action-component-category-structure
+  button
+  + button {
+  margin-left: 10px;
+}
+@keyframes move-button {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

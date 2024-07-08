@@ -3,6 +3,8 @@ import type { TypedUseSelectorHook } from 'react-redux';
 import type { RootState, AppDispatch } from './store';
 import { useEffect, useRef } from 'react';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { ICategory } from '../Models/category';
+import { getCategories, selectCategories } from '../Features/categoryPageSlice';
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 
@@ -61,4 +63,17 @@ export const useSearchProduct = () => {
     })()
   );
   return instanceSearchParams;
+};
+
+export const useCategoriesStore = (cb?: () => void): ICategory[] | null => {
+  const categories = useAppSelector(selectCategories);
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    if (categories) {
+      dispatch(getCategories);
+    }
+    return () => {};
+  }, [categories, dispatch]);
+
+  return categories;
 };
